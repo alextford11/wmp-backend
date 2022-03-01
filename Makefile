@@ -15,3 +15,8 @@ lint:
 	flake8 src/
 	isort --check-only src/
 	$(black) --check src/
+
+.PHONY: reset-db
+reset-db:
+	psql -h localhost -U postgres -c "DROP DATABASE IF EXISTS wmp_backend"
+	psql -h localhost -U postgres -c "CREATE DATABASE wmp_backend"

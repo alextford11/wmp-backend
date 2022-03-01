@@ -1,5 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
 from starlette.middleware.cors import CORSMiddleware
+
+from database import Base, get_engine, get_db
+import schemas
+
+Base.metadata.create_all(bind=get_engine())
 
 app = FastAPI()
 
@@ -21,14 +27,14 @@ async def root():
     return {'message': 'Hello World'}
 
 
-@app.get('/board')
-async def get_board():
+@app.get('/board', response_model=schemas.Board)
+async def get_board(db: Session = Depends(get_db)):
     return {
         'board': {
             'workouts': {
                 'workout-1': {
                     'id': 'workout-1',
-                    'title': 'Push Up',
+                    'name': 'Push Up',
                     'muscles': {
                         'muscle-2': {
                             'id': 'muscle-2',
@@ -42,7 +48,7 @@ async def get_board():
                 },
                 'workout-2': {
                     'id': 'workout-2',
-                    'title': 'High Cable Fly',
+                    'name': 'High Cable Fly',
                     'muscles': {
                         'muscle-1': {
                             'id': 'muscle-1',
