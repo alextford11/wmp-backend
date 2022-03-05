@@ -1,7 +1,9 @@
+from operator import itemgetter
+
 from pydantic import BaseModel
 
 
-class Muscle(BaseModel):
+class MuscleSchema(BaseModel):
     id: int
     name: str
 
@@ -9,23 +11,28 @@ class Muscle(BaseModel):
         orm_mode = True
 
 
-class Workout(BaseModel):
+class WorkoutSchema(BaseModel):
     id: int
-    title: str
-    muscles: list[Muscle] = []
+    name: str
+    related_muscles: list[MuscleSchema] = []
 
     class Config:
         orm_mode = True
 
 
-class BoardWorkout(BaseModel):
+class BoardWorkoutSchema(BaseModel):
     id: int
     sort_value: int
-    workout: Workout
+    workout: WorkoutSchema
+
+    class Config:
+        orm_mode = True
 
 
-class Board(BaseModel):
-    board_workouts: list[BoardWorkout] = []
+class BoardGetSchema(BaseModel):
+    id: int
+    board_workouts: list[BoardWorkoutSchema] = []
+    board_workout_order: list[int] = []
 
     class Config:
         orm_mode = True

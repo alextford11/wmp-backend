@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from database import Base
-from crud import BaseManager
+from src.database import Base
+from src.crud import BaseManager
 
 
 class WorkoutMuscle(Base):
@@ -19,7 +19,7 @@ class Workout(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
-    muscles = relationship('Muscle', secondary=WorkoutMuscle.__tablename__, backref='workouts')
+    related_muscles = relationship('Muscle', secondary=WorkoutMuscle.__tablename__, backref='related_workouts')
 
 
 Workout.manager = BaseManager(Workout)
@@ -31,8 +31,6 @@ class Muscle(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
 
-    workouts = relationship('Workout', secondary=WorkoutMuscle.__tablename__, backref='muscles')
-
 
 Muscle.manager = BaseManager(Muscle)
 
@@ -41,11 +39,14 @@ class BoardWorkout(Base):
     __tablename__ = 'board_workouts'
 
     id = Column(Integer, primary_key=True)
-    sort_value = Column(Integer)
+    sort_value = Column(Integer, default=1)
     board_id = Column(Integer, ForeignKey('boards.id'))
     workout_id = Column(Integer, ForeignKey('workouts.id'))
 
     workout = relationship('Workout')
+
+
+BoardWorkout.manager = BaseManager(BoardWorkout)
 
 
 class Board(Base):
