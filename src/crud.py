@@ -3,7 +3,7 @@ from typing import Union, List
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.orm import Session, Query
 
-MODELS = Union['Workout', 'Muscle', 'Board']
+MODELS = Union['WorkoutMuscle', 'Workout', 'Muscle', 'BoardWorkout', 'Board']
 
 
 class BaseManager:
@@ -41,6 +41,8 @@ class BaseManager:
     def create(self, instance: Union[MODELS]) -> Union[MODELS]:
         assert not instance.id
 
+        if hasattr(instance, 'pre_create'):
+            instance.pre_create(db=self.db)
         try:
             self.db.add(instance)
             self.db.commit()
@@ -48,6 +50,9 @@ class BaseManager:
         except IntegrityError:
             self.db.rollback()
             self.update(instance)
+
+        if hasattr(instance, 'post_create'):
+            instance.post_create(db=self.db)
         return instance
 
     def update(self, instance: Union[MODELS]):

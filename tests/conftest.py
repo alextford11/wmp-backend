@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from main import app
 from src.database import Base, get_db
-from src.models import Board
+from src.models import Board, Workout, Muscle, BoardWorkout
 from src.settings import Settings
 
 DB_DSN = os.getenv('DATABASE_URL', 'postgresql://postgres@localhost:5432/wmp_backend_test')
@@ -47,6 +47,34 @@ def client():
         return cli
 
 
-@pytest.fixture(name='board')
-def create_board(db):
+def _create_board(db) -> Board:
     return Board.manager(db).create(Board())
+
+
+@pytest.fixture(name='board')
+def create_board(db) -> Board:
+    return _create_board(db)
+
+
+def create_muscle(db, **kwargs) -> Muscle:
+    return Muscle.manager(db).create(Muscle(**kwargs))
+
+
+def create_workout(db, **kwargs) -> Workout:
+    muscles = kwargs.pop('muscles', [])
+    workout = Workout(**kwargs)
+    for muscle in muscles:
+        workout.related_muscles.append(muscle)
+    return Workout.manager(db).create(workout)
+
+
+def create_board_workout(db, **kwargs) -> BoardWorkout:
+    return BoardWorkout.manager(db).create(BoardWorkout(**kwargs))
+
+
+def create_basic_board_workout(db, board=None) -> BoardWorkout:
+    if not board:
+        board = _create_board(db)
+    muscle = create_muscle(db, name='Bicep')
+    workout = create_workout(db, name='Pull Up', muscles=[muscle])
+    return create_board_workout(db, board_id=board.id, workout_id=workout.id)

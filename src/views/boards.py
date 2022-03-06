@@ -1,23 +1,23 @@
 from operator import itemgetter
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.database import get_db
 from src.models import Board
-from src.schemas import BoardGetSchema
+from src.schemas import BoardGetSchema, UpdateWorkoutOrderSchema
 
-router = APIRouter()
+router = APIRouter(prefix='/board')
 
 
-@router.post('/board/create/', response_model=BoardGetSchema)
+@router.post('/create/', response_model=BoardGetSchema)
 async def create_board(db: Session = Depends(get_db)):
     board = Board()
     board = Board.manager(db).create(board)
     return board
 
 
-@router.get('/board/{board_id}/')
+@router.get('/{board_id}/')
 async def get_board(board_id: int, db: Session = Depends(get_db)):
     board = db.query(Board).get(board_id)
     board_data = BoardGetSchema(id=board.id, board_workouts=board.board_workouts).dict()
@@ -27,42 +27,18 @@ async def get_board(board_id: int, db: Session = Depends(get_db)):
     return board_data
 
 
-# {
-#     'board': {
-#         'workouts': {
-#             'workout-1': {
-#                 'id': 'workout-1',
-#                 'name': 'Push Up',
-#                 'muscles': {
-#                     'muscle-2': {
-#                         'id': 'muscle-2',
-#                         'name': 'Chest',
-#                     },
-#                     'muscle-3': {
-#                         'id': 'muscle-3',
-#                         'name': 'Biceps',
-#                     },
-#                 },
-#             },
-#             'workout-2': {
-#                 'id': 'workout-2',
-#                 'name': 'High Cable Fly',
-#                 'muscles': {
-#                     'muscle-1': {
-#                         'id': 'muscle-1',
-#                         'name': 'Shoulders',
-#                     },
-#                     'muscle-2': {
-#                         'id': 'muscle-2',
-#                         'name': 'Chest',
-#                     },
-#                     'muscle-3': {
-#                         'id': 'muscle-3',
-#                         'name': 'Triceps',
-#                     },
-#                 },
-#             },
-#         },
-#         'workout_order': ['workout-1', 'workout-2'],
-#     }
-# }
+@router.post('/{board_id}/update_order/')
+async def update_board_workout_order(board_id: int, data: UpdateWorkoutOrderSchema, db: Session = Depends(get_db)):
+    board = db.query(Board).get(board_id)
+    if len(board.board_workouts) != len(set(data.workout_order)):
+        raise HTTPException(status_code=400, detail='New order contains less workouts than saved workouts')
+
+    new_sort_value_lu = {bw_id: index + 1 for index, bw_id in enumerate(data.workout_order)}
+    for board_workout in board.board_workouts:
+        try:
+            board_workout.sort_value = new_sort_value_lu[board_workout.id]
+            db.add(board_workout)
+        except KeyError:
+            raise HTTPException(status_code=400, detail='New order contains values which are not linked to this board')
+    db.commit()
+    return HTTPException(status_code=200)

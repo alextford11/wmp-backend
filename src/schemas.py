@@ -36,3 +36,10 @@ class BoardGetSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UpdateWorkoutOrderSchema(BaseModel):
+    workout_order: list
+
+    class Config:
+        orm_mode = True

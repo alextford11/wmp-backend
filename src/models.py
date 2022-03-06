@@ -45,6 +45,10 @@ class BoardWorkout(Base):
 
     workout = relationship('Workout')
 
+    def pre_create(self, db):
+        board = db.query(Board).get(self.board_id)
+        self.sort_value = len(board.board_workouts) + 1
+
 
 BoardWorkout.manager = BaseManager(BoardWorkout)
 
