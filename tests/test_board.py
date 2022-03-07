@@ -13,6 +13,11 @@ def test_get_board(db, client, board):
     assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'id': board.id}
 
 
+def test_get_board_404(db, client, board):
+    r = client.get('/board/9999/')
+    assert r.status_code == 404
+
+
 def test_get_board_with_workouts(db, client, board):
     muscle = create_muscle(db, name='Bicep')
     workout = create_workout(db, name='Pull Up', muscles=[muscle])
@@ -88,6 +93,12 @@ def test_update_workout_order(db, client, board):
     assert r.json()['board_workout_order'] == [bw2.id, bw1.id]
 
 
+def test_update_workout_404(db, client, board):
+    bw1 = create_basic_board_workout(db, board)
+    r = client.post(f'/board/9999/update_order/', json={'workout_order': [bw1.id]})
+    assert r.status_code == 404
+
+
 def test_update_workout_order_no_workouts(db, client, board):
     r = client.get(f'/board/{board.id}/')
     assert r.json()['board_workout_order'] == []
@@ -137,4 +148,52 @@ def test_update_workout_order_multiple_workout(db, client, board):
 
 
 def test_add_workout_to_board(db, client, board):
-    pass
+    workout = create_workout(db, name='Push Up')
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+    r = client.post(f'/board/{board.id}/add_workout/', json={'workout_id': workout.id})
+    assert r.status_code == 200
+
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == [
+        {
+            'id': 1,
+            'sort_value': 1,
+            'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []},
+        },
+    ]
+
+
+def test_add_workout_to_board_404(db, client, board):
+    workout = create_workout(db, name='Push Up')
+    r = client.post(f'/board/9999/add_workout/', json={'workout_id': workout.id})
+    assert r.status_code == 404
+
+
+def test_add_workout_to_board_no_workouts_exist(db, client, board):
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+    r = client.post(f'/board/{board.id}/add_workout/')
+    assert r.status_code == 422
+
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+
+def test_add_workout_to_board_workout_doesnt_exist(db, client, board):
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+    r = client.post(f'/board/{board.id}/add_workout/', json={'workout_id': 9999})
+    assert r.status_code == 404
+
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []

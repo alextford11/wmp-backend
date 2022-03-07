@@ -1,7 +1,8 @@
-from typing import Union, List
+from typing import List, Union
 
+from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError, NoResultFound
-from sqlalchemy.orm import Session, Query
+from sqlalchemy.orm import Query, Session
 
 MODELS = Union['WorkoutMuscle', 'Workout', 'Muscle', 'BoardWorkout', 'Board']
 
@@ -91,3 +92,15 @@ class BaseManager:
     def create_many(self, *instances: List[Union[MODELS]]) -> None:
         self.db.add_all(*[instances])
         self.db.commit()
+
+    def exists(self, **kwargs) -> bool:
+        return bool(self.db.query(self.model).filter_by(**kwargs).first())
+
+
+def get_object_or_404(db: Session, model: Union[MODELS], **kwargs):
+    try:
+        obj = db.query(model).filter_by(**kwargs).one()
+    except NoResultFound:
+        raise HTTPException(status_code=404, detail=f'{model.__class__.__name__} Not Found')
+    else:
+        return obj

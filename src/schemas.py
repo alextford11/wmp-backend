@@ -1,5 +1,3 @@
-from operator import itemgetter
-
 from pydantic import BaseModel
 
 
@@ -41,5 +39,6 @@ class BoardGetSchema(BaseModel):
 class UpdateWorkoutOrderSchema(BaseModel):
     workout_order: list
 
-    class Config:
-        orm_mode = True
+
+class AddWorkoutSchema(BaseModel):
+    workout_id: int
