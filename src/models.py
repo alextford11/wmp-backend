@@ -46,8 +46,15 @@ class BoardWorkout(Base):
     workout = relationship('Workout')
 
     def pre_create(self, db):
-        board = db.query(Board).get(self.board_id)
-        self.sort_value = len(board.board_workouts) + 1
+        if not self.sort_value:
+            self.set_sort_value(db)
+
+    def set_sort_value(self, db):
+        board = Board.manager(db).get(id=self.board_id)
+        highest_value = len(board.board_workouts) + 1
+        for board_workout in board.board_workouts:
+            highest_value = max(highest_value, board_workout.sort_value + 1)
+        self.sort_value = highest_value
 
 
 BoardWorkout.manager = BaseManager(BoardWorkout)

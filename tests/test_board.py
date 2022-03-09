@@ -197,3 +197,66 @@ def test_add_workout_to_board_workout_doesnt_exist(db, client, board):
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
+
+
+def test_remove_workout_from_board(db, client, board):
+    workout = create_workout(db, name='Push Up')
+    bw = create_board_workout(db, board_id=board.id, workout_id=workout.id)
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == [
+        {'id': bw.id, 'sort_value': 1, 'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []}}
+    ]
+
+    r = client.post(f'/board/{board.id}/remove_workout/', json={'workout_id': workout.id})
+    assert r.status_code == 200
+
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+
+def test_remove_workout_from_board_404(db, client, board):
+    bw = create_basic_board_workout(db, board=board)
+    r = client.post(f'/board/9999/remove_workout/', json={'workout_id': bw.workout_id})
+    assert r.status_code == 404
+
+
+def test_remove_workout_from_board_no_workouts_exist(db, client, board):
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+    r = client.post(f'/board/{board.id}/remove_workout/')
+    assert r.status_code == 422
+
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+
+def test_remove_workout_from_board_workout_doesnt_exist(db, client, board):
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+    r = client.post(f'/board/{board.id}/remove_workout/', json={'workout_id': 9999})
+    assert r.status_code == 404
+
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+
+def test_remove_workout_from_board_workout_not_attached(db, client, board):
+    workout = create_workout(db, name='Push Up')
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []
+
+    r = client.post(f'/board/{board.id}/remove_workout/', json={'workout_id': workout.id})
+    assert r.status_code == 200
+
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == []

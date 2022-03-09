@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.crud import get_object_or_404
 from src.database import get_db
 from src.models import Board, BoardWorkout, Workout
-from src.schemas import AddWorkoutSchema, BoardGetSchema, UpdateWorkoutOrderSchema
+from src.schemas import AddRemoveWorkoutSchema, BoardGetSchema, UpdateWorkoutOrderSchema
 
 router = APIRouter(prefix='/board')
 
@@ -46,8 +46,16 @@ async def update_board_workout_order(board_id: int, data: UpdateWorkoutOrderSche
 
 
 @router.post('/{board_id}/add_workout/')
-async def add_workout_to_board(board_id: int, data: AddWorkoutSchema, db: Session = Depends(get_db)):
+async def add_workout_to_board(board_id: int, data: AddRemoveWorkoutSchema, db: Session = Depends(get_db)):
     get_object_or_404(db, Board, id=board_id)
     get_object_or_404(db, Workout, id=data.workout_id)
     BoardWorkout.manager(db).create(BoardWorkout(board_id=board_id, workout_id=data.workout_id))
+    return HTTPException(status_code=200)
+
+
+@router.post('/{board_id}/remove_workout/')
+async def remove_workout_from_board(board_id: int, data: AddRemoveWorkoutSchema, db: Session = Depends(get_db)):
+    get_object_or_404(db, Board, id=board_id)
+    get_object_or_404(db, Workout, id=data.workout_id)
+    BoardWorkout.manager(db).delete(board_id=board_id, workout_id=data.workout_id)
     return HTTPException(status_code=200)
