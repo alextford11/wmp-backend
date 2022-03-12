@@ -1,0 +1,561 @@
+{
+  "muscles": {
+    "muscle_1": "Bicep",
+    "muscle_2": "Shoulders",
+    "muscle_3": "Chest",
+    "muscle_4": "Traps",
+    "muscle_5": "Forearms",
+    "muscle_6": "Triceps",
+    "muscle_7": "Lats",
+    "muscle_8": "Lower Back",
+    "muscle_9": "Abs",
+    "muscle_10": "Glutes",
+    "muscle_11": "Quads",
+    "muscle_12": "Hamstrings",
+    "muscle_13": "Calves"
+  },
+  "workouts": [
+    {
+      "name": "Barbell Curl",
+      "muscles": [
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "Barbell Overhead Press",
+      "muscles": [
+        "muscle_2"
+      ]
+    },
+    {
+      "name": "Dumbbell Flys",
+      "muscles": [
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Seated Dumbbell Shrugs",
+      "muscles": [
+        "muscle_4"
+      ]
+    },
+    {
+      "name": "Wrist Curl",
+      "muscles": [
+        "muscle_5"
+      ]
+    },
+    {
+      "name": "Seated Triceps Extensions",
+      "muscles": [
+        "muscle_6"
+      ]
+    },
+    {
+      "name": "Pull Ups",
+      "muscles": [
+        "muscle_7",
+        "muscle_4"
+      ]
+    },
+    {
+      "name": "Deadlift",
+      "muscles": [
+        "muscle_8",
+        "muscle_12",
+        "muscle_4"
+      ]
+    },
+    {
+      "name": "Crunches",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Barbell Squat",
+      "muscles": [
+        "muscle_10",
+        "muscle_11",
+        "muscle_12"
+      ]
+    },
+    {
+      "name": "Seated Calf Raises",
+      "muscles": [
+        "muscle_13"
+      ]
+    },
+    {
+      "name": "Dumbbell Curl",
+      "muscles": [
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "Seated Dumbbell Shoulder Press",
+      "muscles": [
+        "muscle_2"
+      ]
+    },
+    {
+      "name": "Incline Dumbbell Press",
+      "muscles": [
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Barbell Silverback Shrug",
+      "muscles": [
+        "muscle_4"
+      ]
+    },
+    {
+      "name": "Barbell Wrist Curl",
+      "muscles": [
+        "muscle_5"
+      ]
+    },
+    {
+      "name": "Laying Triceps Extensions",
+      "muscles": [
+        "muscle_6"
+      ]
+    },
+    {
+      "name": "Bent Over Barbell Row",
+      "muscles": [
+        "muscle_7"
+      ]
+    },
+    {
+      "name": "45C Back Extension",
+      "muscles": [
+        "muscle_8"
+      ]
+    },
+    {
+      "name": "Laying Leg Raises",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Barbell Hip Thrust",
+      "muscles": [
+        "muscle_10"
+      ]
+    },
+    {
+      "name": "Leg Press",
+      "muscles": [
+        "muscle_11"
+      ]
+    },
+    {
+      "name": "Stiff Leg Deadlifts",
+      "muscles": [
+        "muscle_12"
+      ]
+    },
+    {
+      "name": "Barbell Calf Raises",
+      "muscles": [
+        "muscle_13"
+      ]
+    },
+    {
+      "name": "Hammer Curl",
+      "muscles": [
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "Side Lateral Raises",
+      "muscles": [
+        "muscle_2"
+      ]
+    },
+    {
+      "name": "Dumbbell Bench Press",
+      "muscles": [
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Elevated Pike Press",
+      "muscles": [
+        "muscle_4",
+        "muscle_6",
+        "muscle_2"
+      ]
+    },
+    {
+      "name": "Behind The Back Barbell Wrist Curl",
+      "muscles": [
+        "muscle_5"
+      ]
+    },
+    {
+      "name": "Close Grip Bench Press",
+      "muscles": [
+        "muscle_6"
+      ]
+    },
+    {
+      "name": "Dumbbell Row",
+      "muscles": [
+        "muscle_7",
+        "muscle_4"
+      ]
+    },
+    {
+      "name": "Kettlebell Swing",
+      "muscles": [
+        "muscle_8",
+        "muscle_12"
+      ]
+    },
+    {
+      "name": "Hanging Knee Raises",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Barbell Curtsy Lunge",
+      "muscles": [
+        "muscle_10",
+        "muscle_11"
+      ]
+    },
+    {
+      "name": "Hamstring Curl",
+      "muscles": [
+        "muscle_12"
+      ]
+    },
+    {
+      "name": "Standing Calf Raises",
+      "muscles": [
+        "muscle_13"
+      ]
+    },
+    {
+      "name": "Goblet Curl",
+      "muscles": [
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "Dumbbell Front Raises",
+      "muscles": [
+        "muscle_2"
+      ]
+    },
+    {
+      "name": "Barbell Bench Press",
+      "muscles": [
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Elevated Pike Shoulder Shrug",
+      "muscles": [
+        "muscle_4",
+        "muscle_2"
+      ]
+    },
+    {
+      "name": "Reverse Curl",
+      "muscles": [
+        "muscle_5"
+      ]
+    },
+    {
+      "name": "Dips",
+      "muscles": [
+        "muscle_6",
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Seated Cable Row",
+      "muscles": [
+        "muscle_7",
+        "muscle_4"
+      ]
+    },
+    {
+      "name": "Supermans",
+      "muscles": [
+        "muscle_8"
+      ]
+    },
+    {
+      "name": "Forearm Plank",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Hip Thrust",
+      "muscles": [
+        "muscle_10"
+      ]
+    },
+    {
+      "name": "Goblet Squat",
+      "muscles": [
+        "muscle_11"
+      ]
+    },
+    {
+      "name": "Calf Raise",
+      "muscles": [
+        "muscle_13"
+      ]
+    },
+    {
+      "name": "Single Arm Curl",
+      "muscles": [
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "Seated Bent-Over Rear Delt Fly",
+      "muscles": [
+        "muscle_2"
+      ]
+    },
+    {
+      "name": "Incline Barbell Bench Press",
+      "muscles": [
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Standing Smith Machine Shrugs",
+      "muscles": [
+        "muscle_4"
+      ]
+    },
+    {
+      "name": "Chin-Ups",
+      "muscles": [
+        "muscle_5",
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "Push Up",
+      "muscles": [
+        "muscle_6",
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Inverted Row",
+      "muscles": [
+        "muscle_7",
+        "muscle_5",
+        "muscle_4",
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "Roll-Outs",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Glute Bridge",
+      "muscles": [
+        "muscle_10"
+      ]
+    },
+    {
+      "name": "Leg Extension",
+      "muscles": [
+        "muscle_11"
+      ]
+    },
+    {
+      "name": "Treadmill",
+      "muscles": [
+        "muscle_13",
+        "muscle_12",
+        "muscle_11",
+        "muscle_10"
+      ]
+    },
+    {
+      "name": "Face Pulls",
+      "muscles": [
+        "muscle_2"
+      ]
+    },
+    {
+      "name": "Wide Grip Lat Pull Down",
+      "muscles": [
+        "muscle_7"
+      ]
+    },
+    {
+      "name": "Situp",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Single Leg Glute Bridge",
+      "muscles": [
+        "muscle_10"
+      ]
+    },
+    {
+      "name": "Squats",
+      "muscles": [
+        "muscle_11",
+        "muscle_10"
+      ]
+    },
+    {
+      "name": "Preacher Curl",
+      "muscles": [
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "Bent-Over Rear Delt Fly",
+      "muscles": [
+        "muscle_2"
+      ]
+    },
+    {
+      "name": "Low Cable Fly",
+      "muscles": [
+        "muscle_5",
+        "muscle_1",
+        "muscle_2",
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Bench Dips",
+      "muscles": [
+        "muscle_6",
+        "muscle_6",
+        "muscle_2",
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Close Grip Lat Pull Down",
+      "muscles": [
+        "muscle_7"
+      ]
+    },
+    {
+      "name": "Woodchopper",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Single Leg Hip Thrust",
+      "muscles": [
+        "muscle_10"
+      ]
+    },
+    {
+      "name": "Bulgarian Split Squat",
+      "muscles": [
+        "muscle_11"
+      ]
+    },
+    {
+      "name": "Concentration Curl",
+      "muscles": [
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "Incline push-up",
+      "muscles": [
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Diamond Push-Ups",
+      "muscles": [
+        "muscle_6",
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Neutral Grip Lat Pull Down",
+      "muscles": [
+        "muscle_7"
+      ]
+    },
+    {
+      "name": "Russian Twist",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Decline Push-Up",
+      "muscles": [
+        "muscle_2",
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Barbell Roll-Outs",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Tricep Push Downs",
+      "muscles": [
+        "muscle_6"
+      ]
+    },
+    {
+      "name": "Reverse Woodchopper",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Incline Dumbbell Curl",
+      "muscles": [
+        "muscle_1"
+      ]
+    },
+    {
+      "name": "High Cable Fly",
+      "muscles": [
+        "muscle_6",
+        "muscle_2",
+        "muscle_3"
+      ]
+    },
+    {
+      "name": "Horizontal Woodchopper",
+      "muscles": [
+        "muscle_9"
+      ]
+    },
+    {
+      "name": "Overhead Rope Tricep Extension",
+      "muscles": [
+        "muscle_6"
+      ]
+    }
+  ]
+}

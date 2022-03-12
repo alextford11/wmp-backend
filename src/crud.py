@@ -72,11 +72,13 @@ class BaseManager:
         self.db.flush()
 
     def get_or_create(self, **kwargs) -> Union[MODELS]:
+        created = False
         try:
             instance = self.get(**kwargs)
         except NoResultFound:
-            instance = self.create(**kwargs)
-        return instance
+            instance = self.create(self.model(**kwargs))
+            created = True
+        return instance, created
 
     def create_or_update(self, instance: Union[MODELS]):
         if instance.id:
