@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from src.crud import get_object_or_404
 from src.database import get_db
-from src.models import Board, BoardWorkout, Workout
+from src.models import Board, BoardWorkout, Workout, Muscle
 from src.schemas import AddRemoveWorkoutSchema, BoardGetSchema, UpdateWorkoutOrderSchema
 
 router = APIRouter(prefix='/board')
@@ -18,13 +18,21 @@ async def create_board(db: Session = Depends(get_db)):
     return board
 
 
-@router.get('/{board_id}/')
+@router.get('/{board_id}/', response_model=BoardGetSchema)
 async def get_board(board_id: int, db: Session = Depends(get_db)):
     board = get_object_or_404(db, Board, id=board_id)
     board_data = BoardGetSchema(id=board.id, board_workouts=board.board_workouts).dict()
     board_data['board_workout_order'] = [
         workout['id'] for workout in sorted(board_data['board_workouts'], key=itemgetter('sort_value'))
     ]
+
+    muscles = Muscle.manager(db).all()
+    board_muscle_counts = dict(sorted({muscle.name: 0 for muscle in muscles}.items()))
+    for board_workout in board.board_workouts:
+        workout = board_workout.workout
+        for muscle in workout.related_muscles:
+            board_muscle_counts[muscle.name] += 1
+    board_data['board_muscle_counts'] = dict(sorted(board_muscle_counts.items(), key=itemgetter(1), reverse=True))
     return board_data
 
 

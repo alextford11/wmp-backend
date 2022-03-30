@@ -4,13 +4,13 @@ from tests.conftest import create_muscle, create_workout, create_board_workout, 
 def test_create_board(db, client):
     r = client.post('/board/create/')
     assert r.status_code == 200
-    assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'id': 1}
+    assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': 1}
 
 
 def test_get_board(db, client, board):
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
-    assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'id': board.id}
+    assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': board.id}
 
 
 def test_get_board_404(db, client, board):
@@ -37,6 +37,7 @@ def test_get_board_with_workouts(db, client, board):
             }
         ],
         'board_workout_order': [board_workout.id],
+        'board_muscle_counts': {'Bicep': 1},
         'id': board.id,
     }
 
@@ -74,6 +75,7 @@ def test_get_board_with_multiple_workouts(db, client, board):
             },
         ],
         'board_workout_order': [board_workout1.id, board_workout2.id],
+        'board_muscle_counts': {'Bicep': 2, 'Chest': 1},
         'id': board.id,
     }
 
