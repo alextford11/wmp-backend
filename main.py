@@ -6,7 +6,8 @@ from src.views import boards, index, workouts
 
 Base.metadata.create_all(bind=get_engine())
 ORIGINS = [
-    "http://localhost:3000",
+    'http://localhost:3000',
+    'https://frontend-wmp.herokuapp.com',
 ]
 
 app = FastAPI()
