@@ -41,8 +41,12 @@ class UpdateWorkoutOrderSchema(BaseModel):
     workout_order: list
 
 
-class AddRemoveWorkoutSchema(BaseModel):
+class AddWorkoutSchema(BaseModel):
     workout_id: int
+
+
+class RemoveWorkoutSchema(BaseModel):
+    board_workout_id: int
 
 
 class WorkoutListSchema(BaseModel):

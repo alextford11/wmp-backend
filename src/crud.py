@@ -28,9 +28,9 @@ class BaseManager:
     def filter(self, *args, **kwargs) -> Query:
         q = self.db.query(self.model)
         if args:
-            q.filter(*args)
+            q = q.filter(*args)
         if kwargs:
-            q.filter_by(**kwargs)
+            q = q.filter_by(**kwargs)
         return q
 
     def all(self) -> List[Union[MODELS]]:

@@ -210,7 +210,7 @@ def test_remove_workout_from_board(db, client, board):
         {'id': bw.id, 'sort_value': 1, 'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []}}
     ]
 
-    r = client.post(f'/board/{board.id}/remove_workout/', json={'workout_id': workout.id})
+    r = client.post(f'/board/{board.id}/remove_workout/', json={'board_workout_id': bw.id})
     assert r.status_code == 200
 
     r = client.get(f'/board/{board.id}/')
@@ -220,7 +220,7 @@ def test_remove_workout_from_board(db, client, board):
 
 def test_remove_workout_from_board_404(db, client, board):
     bw = create_basic_board_workout(db, board=board)
-    r = client.post(f'/board/9999/remove_workout/', json={'workout_id': bw.workout_id})
+    r = client.post(f'/board/9999/remove_workout/', json={'board_workout_id': bw.id})
     assert r.status_code == 404
 
 
@@ -242,7 +242,7 @@ def test_remove_workout_from_board_workout_doesnt_exist(db, client, board):
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
 
-    r = client.post(f'/board/{board.id}/remove_workout/', json={'workout_id': 9999})
+    r = client.post(f'/board/{board.id}/remove_workout/', json={'board_workout_id': 9999})
     assert r.status_code == 404
 
     r = client.get(f'/board/{board.id}/')
@@ -250,15 +250,22 @@ def test_remove_workout_from_board_workout_doesnt_exist(db, client, board):
     assert r.json()['board_workouts'] == []
 
 
-def test_remove_workout_from_board_workout_not_attached(db, client, board):
+def test_remove_multiple_same_workout_from_board(db, client, board):
     workout = create_workout(db, name='Push Up')
+    bw1 = create_board_workout(db, board_id=board.id, workout_id=workout.id)
+    bw2 = create_board_workout(db, board_id=board.id, workout_id=workout.id)
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
-    assert r.json()['board_workouts'] == []
+    assert r.json()['board_workouts'] == [
+        {'id': bw1.id, 'sort_value': 1, 'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []}},
+        {'id': bw2.id, 'sort_value': 2, 'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []}}
+    ]
 
-    r = client.post(f'/board/{board.id}/remove_workout/', json={'workout_id': workout.id})
+    r = client.post(f'/board/{board.id}/remove_workout/', json={'board_workout_id': bw1.id})
     assert r.status_code == 200
 
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
-    assert r.json()['board_workouts'] == []
+    assert r.json()['board_workouts'] == [
+        {'id': bw2.id, 'sort_value': 2, 'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []}}
+    ]
