@@ -34,6 +34,10 @@ def test_get_board_with_workouts(db, client, board):
                     'related_muscles': [{'id': muscle.id, 'name': 'Bicep'}],
                     'name': 'Pull Up',
                 },
+                'sets_value': 3,
+                'reps_value': 10,
+                'measurement_value': 10,
+                'measurement_unit': 'kg',
             }
         ],
         'board_workout_order': [board_workout.id],
@@ -63,6 +67,10 @@ def test_get_board_with_multiple_workouts(db, client, board):
                     'related_muscles': [{'id': muscle1.id, 'name': 'Bicep'}],
                     'name': 'Pull Up',
                 },
+                'sets_value': 3,
+                'reps_value': 10,
+                'measurement_value': 10,
+                'measurement_unit': 'kg',
             },
             {
                 'id': board_workout2.id,
@@ -72,6 +80,10 @@ def test_get_board_with_multiple_workouts(db, client, board):
                     'related_muscles': [{'id': muscle1.id, 'name': 'Bicep'}, {'id': muscle2.id, 'name': 'Chest'}],
                     'name': 'Push Up',
                 },
+                'sets_value': 3,
+                'reps_value': 10,
+                'measurement_value': 10,
+                'measurement_unit': 'kg',
             },
         ],
         'board_workout_order': [board_workout1.id, board_workout2.id],
@@ -155,7 +167,7 @@ def test_add_workout_to_board(db, client, board):
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
 
-    r = client.post(f'/board/{board.id}/add_workout/', json={'workout_id': workout.id})
+    r = client.post(f'/board/{board.id}/workout/', json={'workout_id': workout.id})
     assert r.status_code == 200
 
     r = client.get(f'/board/{board.id}/')
@@ -165,13 +177,17 @@ def test_add_workout_to_board(db, client, board):
             'id': 1,
             'sort_value': 1,
             'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []},
+            'sets_value': 3,
+            'reps_value': 10,
+            'measurement_value': 10,
+            'measurement_unit': 'kg',
         },
     ]
 
 
 def test_add_workout_to_board_404(db, client, board):
     workout = create_workout(db, name='Push Up')
-    r = client.post(f'/board/9999/add_workout/', json={'workout_id': workout.id})
+    r = client.post(f'/board/9999/workout/', json={'workout_id': workout.id})
     assert r.status_code == 404
 
 
@@ -180,7 +196,7 @@ def test_add_workout_to_board_no_workouts_exist(db, client, board):
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
 
-    r = client.post(f'/board/{board.id}/add_workout/')
+    r = client.post(f'/board/{board.id}/workout/')
     assert r.status_code == 422
 
     r = client.get(f'/board/{board.id}/')
@@ -193,7 +209,7 @@ def test_add_workout_to_board_workout_doesnt_exist(db, client, board):
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
 
-    r = client.post(f'/board/{board.id}/add_workout/', json={'workout_id': 9999})
+    r = client.post(f'/board/{board.id}/workout/', json={'workout_id': 9999})
     assert r.status_code == 404
 
     r = client.get(f'/board/{board.id}/')
@@ -207,10 +223,18 @@ def test_remove_workout_from_board(db, client, board):
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == [
-        {'id': bw.id, 'sort_value': 1, 'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []}}
+        {
+            'id': bw.id,
+            'sort_value': 1,
+            'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []},
+            'sets_value': 3,
+            'reps_value': 10,
+            'measurement_value': 10,
+            'measurement_unit': 'kg',
+        }
     ]
 
-    r = client.post(f'/board/{board.id}/remove_workout/', json={'board_workout_id': bw.id})
+    r = client.delete(f'/board/{board.id}/workout/{workout.id}/', json={'board_workout_id': bw.id})
     assert r.status_code == 200
 
     r = client.get(f'/board/{board.id}/')
@@ -220,21 +244,8 @@ def test_remove_workout_from_board(db, client, board):
 
 def test_remove_workout_from_board_404(db, client, board):
     bw = create_basic_board_workout(db, board=board)
-    r = client.post(f'/board/9999/remove_workout/', json={'board_workout_id': bw.id})
+    r = client.delete(f'/board/9999/workout/{bw.id}/', json={'board_workout_id': bw.id})
     assert r.status_code == 404
-
-
-def test_remove_workout_from_board_no_workouts_exist(db, client, board):
-    r = client.get(f'/board/{board.id}/')
-    assert r.status_code == 200
-    assert r.json()['board_workouts'] == []
-
-    r = client.post(f'/board/{board.id}/remove_workout/')
-    assert r.status_code == 422
-
-    r = client.get(f'/board/{board.id}/')
-    assert r.status_code == 200
-    assert r.json()['board_workouts'] == []
 
 
 def test_remove_workout_from_board_workout_doesnt_exist(db, client, board):
@@ -242,7 +253,7 @@ def test_remove_workout_from_board_workout_doesnt_exist(db, client, board):
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
 
-    r = client.post(f'/board/{board.id}/remove_workout/', json={'board_workout_id': 9999})
+    r = client.delete(f'/board/{board.id}/workout/9999/')
     assert r.status_code == 404
 
     r = client.get(f'/board/{board.id}/')
@@ -257,15 +268,68 @@ def test_remove_multiple_same_workout_from_board(db, client, board):
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == [
-        {'id': bw1.id, 'sort_value': 1, 'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []}},
-        {'id': bw2.id, 'sort_value': 2, 'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []}}
+        {
+            'id': bw1.id,
+            'sort_value': 1,
+            'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []},
+            'sets_value': 3,
+            'reps_value': 10,
+            'measurement_value': 10,
+            'measurement_unit': 'kg',
+        },
+        {
+            'id': bw2.id,
+            'sort_value': 2,
+            'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []},
+            'sets_value': 3,
+            'reps_value': 10,
+            'measurement_value': 10,
+            'measurement_unit': 'kg',
+        },
     ]
 
-    r = client.post(f'/board/{board.id}/remove_workout/', json={'board_workout_id': bw1.id})
+    r = client.delete(f'/board/{board.id}/workout/{bw1.id}/')
     assert r.status_code == 200
 
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == [
-        {'id': bw2.id, 'sort_value': 2, 'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []}}
+        {
+            'id': bw2.id,
+            'sort_value': 2,
+            'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []},
+            'sets_value': 3,
+            'reps_value': 10,
+            'measurement_value': 10,
+            'measurement_unit': 'kg',
+        }
     ]
+
+
+def test_update_board_workout_values(db, client, board):
+    workout = create_workout(db, name='Push Up')
+    bw = create_board_workout(db, board_id=board.id, workout_id=workout.id)
+    r = client.put(f'/board/{board.id}/workout/{bw.id}/', json={'sets_value': 5, 'reps_value': 20})
+    assert r.status_code == 200
+
+    r = client.get(f'/board/{board.id}/')
+    assert r.status_code == 200
+    assert r.json()['board_workouts'] == [
+        {
+            'id': bw.id,
+            'sort_value': 1,
+            'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []},
+            'sets_value': 5,
+            'reps_value': 20,
+            'measurement_value': 10,
+            'measurement_unit': 'kg',
+        }
+    ]
+
+
+def test_update_board_workout_values_404(db, client, board):
+    r = client.put('/board/9999/workout/9999/', json={'sets_value': 5, 'reps_value': 20})
+    assert r.status_code == 404
+
+    r = client.put(f'/board/{board.id}/workout/9999/', json={'sets_value': 5, 'reps_value': 20})
+    assert r.status_code == 404

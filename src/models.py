@@ -42,6 +42,10 @@ class BoardWorkout(Base):
     sort_value = Column(Integer, default=1)
     board_id = Column(Integer, ForeignKey('boards.id'))
     workout_id = Column(Integer, ForeignKey('workouts.id'))
+    sets_value = Column(Integer, default=3)
+    reps_value = Column(Integer, default=10)
+    measurement_value = Column(Integer, default=10)
+    measurement_unit = Column(String, default='kg')
 
     workout = relationship('Workout')
 

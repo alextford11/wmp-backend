@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.crud import get_object_or_404
 from src.database import get_db
 from src.models import Board, BoardWorkout, Workout, Muscle
-from src.schemas import BoardGetSchema, UpdateWorkoutOrderSchema, AddWorkoutSchema, RemoveWorkoutSchema
+from src.schemas import BoardGetSchema, UpdateWorkoutOrderSchema, AddWorkoutSchema, UpdateWorkoutSchema
 
 router = APIRouter(prefix='/board')
 
@@ -53,7 +53,7 @@ async def update_board_workout_order(board_id: int, data: UpdateWorkoutOrderSche
     return HTTPException(status_code=200)
 
 
-@router.post('/{board_id}/add_workout/')
+@router.post('/{board_id}/workout/')
 async def add_workout_to_board(board_id: int, data: AddWorkoutSchema, db: Session = Depends(get_db)):
     get_object_or_404(db, Board, id=board_id)
     get_object_or_404(db, Workout, id=data.workout_id)
@@ -61,9 +61,22 @@ async def add_workout_to_board(board_id: int, data: AddWorkoutSchema, db: Sessio
     return HTTPException(status_code=200)
 
 
-@router.post('/{board_id}/remove_workout/')
-async def remove_workout_from_board(board_id: int, data: RemoveWorkoutSchema, db: Session = Depends(get_db)):
+@router.delete('/{board_id}/workout/{board_workout_id}/')
+async def remove_workout_from_board(board_id: int, board_workout_id: int, db: Session = Depends(get_db)):
     get_object_or_404(db, Board, id=board_id)
-    get_object_or_404(db, Workout, id=data.board_workout_id)
-    BoardWorkout.manager(db).delete(id=data.board_workout_id, board_id=board_id)
+    get_object_or_404(db, Workout, id=board_workout_id)
+    BoardWorkout.manager(db).delete(id=board_workout_id, board_id=board_id)
+    return HTTPException(status_code=200)
+
+
+@router.put('/{board_id}/workout/{board_workout_id}/')
+async def update_board_workout(
+    board_id: int, board_workout_id: int, data: UpdateWorkoutSchema, db: Session = Depends(get_db)
+):
+    get_object_or_404(db, Board, id=board_id)
+    board_workout: BoardWorkout = get_object_or_404(db, BoardWorkout, id=board_workout_id)
+    for field, value in data.dict().items():
+        if value is not None:
+            setattr(board_workout, field, value)
+    BoardWorkout.manager(db).update(board_workout)
     return HTTPException(status_code=200)
