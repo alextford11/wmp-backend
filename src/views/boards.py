@@ -80,3 +80,8 @@ async def update_board_workout(
             setattr(board_workout, field, value)
     BoardWorkout.manager(db).update(board_workout)
     return HTTPException(status_code=200)
+
+
+@router.options('/{board_id}/workout/{board_workout_id}/', include_in_schema=False)
+async def update_board_workout_options():
+    return UpdateWorkoutSchema.schema()
