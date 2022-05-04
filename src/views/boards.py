@@ -6,7 +6,15 @@ from sqlalchemy.orm import Session
 from src.crud import get_object_or_404
 from src.database import get_db
 from src.models import Board, BoardWorkout, Workout, Muscle
-from src.schemas import BoardGetSchema, UpdateWorkoutOrderSchema, AddWorkoutSchema, UpdateWorkoutSchema
+from src.schemas import (
+    BoardGetSchema,
+    UpdateWorkoutOrderSchema,
+    AddWorkoutSchema,
+    UpdateWorkoutSchema,
+    SelectInputListSchema,
+    MeasurementUnits,
+    SelectGroupInputListSchema,
+)
 
 router = APIRouter(prefix='/board')
 
@@ -82,6 +90,16 @@ async def update_board_workout(
     return HTTPException(status_code=200)
 
 
-@router.options('/{board_id}/workout/{board_workout_id}/', include_in_schema=False)
-async def update_board_workout_options():
-    return UpdateWorkoutSchema.schema()
+@router.get('/measurement-units/list/', response_model=SelectInputListSchema)
+async def get_measurement_units_list():
+    return {'options': [{'label': unit.label, 'value': unit.value} for unit in list(MeasurementUnits)]}
+
+
+@router.get('/measurement-units/categories/', response_model=SelectGroupInputListSchema)
+async def get_categorised_measurement_units_list():
+    return {
+        'options': [
+            {'label': group, 'options': [{'label': unit.label, 'value': unit.value} for unit in units]}
+            for group, units in MeasurementUnits.get_categories().items()
+        ]
+    }

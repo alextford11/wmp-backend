@@ -52,6 +52,15 @@ class MeasurementUnits(LabelledEnum):
     FOOT = 'ft', 'Feet'
     INCH = 'in', 'Inches'
 
+    @classmethod
+    def get_categories(cls) -> dict:
+        return {
+            'Mass': [cls.KILOGRAM, cls.GRAM, cls.POUND],
+            'Time': [cls.SECOND, cls.MINUTE, cls.HOUR],
+            'Energy': [cls.CALORIE],
+            'Length': [cls.KILOMETER, cls.METER, cls.CENTIMETER, cls.MILE, cls.YARD, cls.FOOT, cls.INCH],
+        }
+
 
 class MuscleSchema(BaseModel):
     id: int
@@ -113,3 +122,27 @@ class WorkoutListSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SelectInputOptionSchema(BaseModel):
+    value: str
+    label: str
+
+    class Config:
+        orm_mode = True
+
+
+class SelectInputListSchema(BaseModel):
+    options: list[SelectInputOptionSchema]
+
+
+class SelectGroupInputOptionSchema(BaseModel):
+    label: str
+    options: list[SelectInputOptionSchema]
+
+    class Config:
+        orm_mode = True
+
+
+class SelectGroupInputListSchema(BaseModel):
+    options: list[SelectGroupInputOptionSchema]

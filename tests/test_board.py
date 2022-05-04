@@ -333,3 +333,62 @@ def test_update_board_workout_values_404(db, client, board):
 
     r = client.put(f'/board/{board.id}/workout/9999/', json={'sets_value': 5, 'reps_value': 20})
     assert r.status_code == 404
+
+
+def test_get_measurement_unit_lists(client):
+    r = client.get('/board/measurement-units/list/')
+    assert r.status_code == 200
+    assert r.json() == {
+        'options': [
+            {'label': 'Kilograms', 'value': 'kg'},
+            {'label': 'Grams', 'value': 'g'},
+            {'label': 'Pounds', 'value': 'lb'},
+            {'label': 'Seconds', 'value': 's'},
+            {'label': 'Minutes', 'value': 'min'},
+            {'label': 'Hours', 'value': 'h'},
+            {'label': 'Calories', 'value': 'cal'},
+            {'label': 'Kilometers', 'value': 'km'},
+            {'label': 'Meters', 'value': 'm'},
+            {'label': 'Centimeters', 'value': 'cm'},
+            {'label': 'Miles', 'value': 'mi'},
+            {'label': 'Yards', 'value': 'yd'},
+            {'label': 'Feet', 'value': 'ft'},
+            {'label': 'Inches', 'value': 'in'},
+        ]
+    }
+
+    r = client.get('/board/measurement-units/categories/')
+    assert r.status_code == 200
+    assert r.json() == {
+        'options': [
+            {
+                'label': 'Mass',
+                'options': [
+                    {'label': 'Kilograms', 'value': 'kg'},
+                    {'label': 'Grams', 'value': 'g'},
+                    {'label': 'Pounds', 'value': 'lb'},
+                ],
+            },
+            {
+                'label': 'Time',
+                'options': [
+                    {'label': 'Seconds', 'value': 's'},
+                    {'label': 'Minutes', 'value': 'min'},
+                    {'label': 'Hours', 'value': 'h'},
+                ],
+            },
+            {'label': 'Energy', 'options': [{'label': 'Calories', 'value': 'cal'}]},
+            {
+                'label': 'Length',
+                'options': [
+                    {'label': 'Kilometers', 'value': 'km'},
+                    {'label': 'Meters', 'value': 'm'},
+                    {'label': 'Centimeters', 'value': 'cm'},
+                    {'label': 'Miles', 'value': 'mi'},
+                    {'label': 'Yards', 'value': 'yd'},
+                    {'label': 'Feet', 'value': 'ft'},
+                    {'label': 'Inches', 'value': 'in'},
+                ],
+            },
+        ]
+    }
