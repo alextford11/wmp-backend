@@ -22,11 +22,11 @@ class LabelledEnum(Enum):
     @classmethod
     def validate(cls, v):
         try:
-            new_v = cls(v)
+            cls(v)
         except (TypeError, ValueError):
             raise
 
-        return new_v
+        return v
 
 
 class MeasurementUnits(LabelledEnum):
