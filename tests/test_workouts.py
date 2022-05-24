@@ -1,4 +1,4 @@
-from tests.conftest import create_workout, create_muscle
+from tests.conftest import create_muscle, create_workout
 
 
 def test_workout_list_no_workouts_exist(db, client):

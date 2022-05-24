@@ -7,14 +7,14 @@ install:
 
 .PHONY: format
 format:
-	isort src/
-	$(black) src/
+	isort src/ tests/
+	$(black) src/ tests/
 
 .PHONY: lint
 lint:
-	flake8 src/
-	isort --check-only src/
-	$(black) --check src/
+	flake8 src/ tests/
+	isort --check-only src/ tests/
+	$(black) --check src/ tests/
 
 .PHONY: reset-db
 reset-db:

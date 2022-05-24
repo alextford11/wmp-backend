@@ -1,4 +1,4 @@
-from tests.conftest import create_muscle, create_workout, create_board_workout, create_basic_board_workout
+from tests.conftest import create_basic_board_workout, create_board_workout, create_muscle, create_workout
 
 
 def test_create_board(db, client):
@@ -109,7 +109,7 @@ def test_update_workout_order(db, client, board):
 
 def test_update_workout_404(db, client, board):
     bw1 = create_basic_board_workout(db, board)
-    r = client.post(f'/board/9999/update_order/', json={'workout_order': [bw1.id]})
+    r = client.post('/board/9999/update_order/', json={'workout_order': [bw1.id]})
     assert r.status_code == 404
 
 
@@ -187,7 +187,7 @@ def test_add_workout_to_board(db, client, board):
 
 def test_add_workout_to_board_404(db, client, board):
     workout = create_workout(db, name='Push Up')
-    r = client.post(f'/board/9999/workout/', json={'workout_id': workout.id})
+    r = client.post('/board/9999/workout/', json={'workout_id': workout.id})
     assert r.status_code == 404
 
 

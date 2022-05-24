@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from main import app
 from src.database import Base, get_db
-from src.models import Board, Workout, Muscle, BoardWorkout
+from src.models import Board, BoardWorkout, Muscle, Workout
 from src.settings import Settings
 
 DB_DSN = os.getenv('DATABASE_URL', 'postgresql://postgres@localhost:5432/wmp_backend_test')

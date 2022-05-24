@@ -1,6 +1,6 @@
-from aenum import Enum
 from typing import Optional
 
+from aenum import Enum
 from pydantic import BaseModel
 
 
