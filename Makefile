@@ -27,3 +27,7 @@ reset-db:
 rebuild-db:
 	make reset-db
 	python manage.py build-workouts
+
+.PHONY: test
+test:
+	pytest

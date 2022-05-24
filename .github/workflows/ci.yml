@@ -1,0 +1,52 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    name: Run linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python3.10
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.10
+      - name: Install dependencies
+        run: make install
+      - name: Run linter
+        run: make lint
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: wmp_backend
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
+
+    env:
+      DATABASE_URL: 'postgres://postgres:postgres@127.0.0.1:5432/wmp_backend'
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python3.10
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.10
+      - name: Install dependencies
+        run: make install
+      - name: Run tests
+        run: make test
