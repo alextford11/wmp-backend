@@ -38,7 +38,7 @@ jobs:
         options: --entrypoint redis-server
 
     env:
-      DATABASE_URL: 'postgres://postgres:postgres@127.0.0.1:5432/wmp_backend'
+      DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:5432/wmp_backend'
 
     steps:
       - uses: actions/checkout@v2
