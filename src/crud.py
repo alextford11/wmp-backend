@@ -98,6 +98,9 @@ class BaseManager:
     def exists(self, **kwargs) -> bool:
         return bool(self.db.query(self.model).filter_by(**kwargs).first())
 
+    def order_by(self, *args):
+        return self.db.query(self.model).order_by(*args)
+
 
 def get_object_or_404(db: Session, model: Union[MODELS], **kwargs):
     try:

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from aenum import Enum
 from pydantic import BaseModel
@@ -125,7 +125,7 @@ class WorkoutListSchema(BaseModel):
 
 
 class SelectInputOptionSchema(BaseModel):
-    value: str
+    value: Union[str, int]
     label: str
 
     class Config:
