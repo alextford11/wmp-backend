@@ -1,27 +1,26 @@
-from tests.conftest import create_basic_board_workout, create_board_workout, create_muscle, create_workout
-
-
-def test_create_board(db, client):
+def test_create_board(client):
     r = client.post('/board/create/')
     assert r.status_code == 200
     assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': 1}
 
 
-def test_get_board(db, client, board):
+def test_get_board(client, factory):
+    board = factory.create_board()
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': board.id}
 
 
-def test_get_board_404(db, client, board):
+def test_get_board_404(client, factory):
     r = client.get('/board/9999/')
     assert r.status_code == 404
 
 
-def test_get_board_with_workouts(db, client, board):
-    muscle = create_muscle(db, name='Bicep')
-    workout = create_workout(db, name='Pull Up', muscles=[muscle])
-    board_workout = create_board_workout(db, board_id=board.id, workout_id=workout.id)
+def test_get_board_with_workouts(client, factory):
+    board = factory.create_board()
+    muscle = factory.create_muscle(name='Bicep')
+    workout = factory.create_workout(name='Pull Up', muscles=[muscle])
+    board_workout = factory.create_board_workout(board=board, workout=workout)
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json() == {
@@ -46,15 +45,16 @@ def test_get_board_with_workouts(db, client, board):
     }
 
 
-def test_get_board_with_multiple_workouts(db, client, board):
-    muscle1 = create_muscle(db, name='Bicep')
-    muscle2 = create_muscle(db, name='Chest')
+def test_get_board_with_multiple_workouts(client, factory):
+    board = factory.create_board()
+    muscle1 = factory.create_muscle(name='Bicep')
+    muscle2 = factory.create_muscle(name='Chest')
 
-    workout1 = create_workout(db, name='Pull Up', muscles=[muscle1])
-    board_workout1 = create_board_workout(db, board_id=board.id, workout_id=workout1.id)
+    workout1 = factory.create_workout(name='Pull Up', muscles=[muscle1])
+    board_workout1 = factory.create_board_workout(board=board, workout=workout1)
 
-    workout2 = create_workout(db, name='Push Up', muscles=[muscle1, muscle2])
-    board_workout2 = create_board_workout(db, board_id=board.id, workout_id=workout2.id)
+    workout2 = factory.create_workout(name='Push Up', muscles=[muscle1, muscle2])
+    board_workout2 = factory.create_board_workout(board=board, workout=workout2)
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json() == {
@@ -92,9 +92,10 @@ def test_get_board_with_multiple_workouts(db, client, board):
     }
 
 
-def test_update_workout_order(db, client, board):
-    bw1 = create_basic_board_workout(db, board)
-    bw2 = create_basic_board_workout(db, board)
+def test_update_workout_order(client, factory):
+    board = factory.create_board()
+    bw1 = factory.create_board_workout(board=board)
+    bw2 = factory.create_board_workout(board=board)
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workout_order'] == [bw1.id, bw2.id]
@@ -107,13 +108,15 @@ def test_update_workout_order(db, client, board):
     assert r.json()['board_workout_order'] == [bw2.id, bw1.id]
 
 
-def test_update_workout_404(db, client, board):
-    bw1 = create_basic_board_workout(db, board)
+def test_update_workout_404(client, factory):
+    board = factory.create_board()
+    bw1 = factory.create_board_workout(board=board)
     r = client.post('/board/9999/update_order/', json={'workout_order': [bw1.id]})
     assert r.status_code == 404
 
 
-def test_update_workout_order_no_workouts(db, client, board):
+def test_update_workout_order_no_workouts(client, factory):
+    board = factory.create_board()
     r = client.get(f'/board/{board.id}/')
     assert r.json()['board_workout_order'] == []
 
@@ -124,8 +127,9 @@ def test_update_workout_order_no_workouts(db, client, board):
     assert r.status_code == 400, r.json()
 
 
-def test_update_workout_order_1_workout(db, client, board):
-    bw1 = create_basic_board_workout(db, board)
+def test_update_workout_order_1_workout(client, factory):
+    board = factory.create_board()
+    bw1 = factory.create_board_workout(board=board)
     r = client.get(f'/board/{board.id}/')
     assert r.json()['board_workout_order'] == [bw1.id]
 
@@ -139,10 +143,11 @@ def test_update_workout_order_1_workout(db, client, board):
     assert r.status_code == 200
 
 
-def test_update_workout_order_multiple_workout(db, client, board):
-    bw1 = create_basic_board_workout(db, board)
-    bw2 = create_basic_board_workout(db, board)
-    bw3 = create_basic_board_workout(db, board)
+def test_update_workout_order_multiple_workout(client, factory):
+    board = factory.create_board()
+    bw1 = factory.create_board_workout(board=board)
+    bw2 = factory.create_board_workout(board=board)
+    bw3 = factory.create_board_workout(board=board)
     r = client.get(f'/board/{board.id}/')
     assert r.json()['board_workout_order'] == [bw1.id, bw2.id, bw3.id]
 
@@ -161,8 +166,9 @@ def test_update_workout_order_multiple_workout(db, client, board):
     assert r.status_code == 400
 
 
-def test_add_workout_to_board(db, client, board):
-    workout = create_workout(db, name='Push Up')
+def test_add_workout_to_board(client, factory):
+    board = factory.create_board()
+    workout = factory.create_workout(name='Push Up')
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
@@ -185,13 +191,15 @@ def test_add_workout_to_board(db, client, board):
     ]
 
 
-def test_add_workout_to_board_404(db, client, board):
-    workout = create_workout(db, name='Push Up')
+def test_add_workout_to_board_404(client, factory):
+    factory.create_board()
+    workout = factory.create_workout(name='Push Up')
     r = client.post('/board/9999/workout/', json={'workout_id': workout.id})
     assert r.status_code == 404
 
 
-def test_add_workout_to_board_no_workouts_exist(db, client, board):
+def test_add_workout_to_board_no_workouts_exist(client, factory):
+    board = factory.create_board()
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
@@ -204,7 +212,8 @@ def test_add_workout_to_board_no_workouts_exist(db, client, board):
     assert r.json()['board_workouts'] == []
 
 
-def test_add_workout_to_board_workout_doesnt_exist(db, client, board):
+def test_add_workout_to_board_workout_doesnt_exist(client, factory):
+    board = factory.create_board()
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
@@ -217,9 +226,10 @@ def test_add_workout_to_board_workout_doesnt_exist(db, client, board):
     assert r.json()['board_workouts'] == []
 
 
-def test_remove_workout_from_board(db, client, board):
-    workout = create_workout(db, name='Push Up')
-    bw = create_board_workout(db, board_id=board.id, workout_id=workout.id)
+def test_remove_workout_from_board(client, factory):
+    board = factory.create_board()
+    workout = factory.create_workout(name='Push Up')
+    bw = factory.create_board_workout(board=board, workout=workout)
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == [
@@ -242,13 +252,15 @@ def test_remove_workout_from_board(db, client, board):
     assert r.json()['board_workouts'] == []
 
 
-def test_remove_workout_from_board_404(db, client, board):
-    bw = create_basic_board_workout(db, board=board)
+def test_remove_workout_from_board_404(client, factory):
+    board = factory.create_board()
+    bw = factory.create_board_workout(board=board)
     r = client.delete(f'/board/9999/workout/{bw.id}/', json={'board_workout_id': bw.id})
     assert r.status_code == 404
 
 
-def test_remove_workout_from_board_workout_doesnt_exist(db, client, board):
+def test_remove_workout_from_board_workout_doesnt_exist(client, factory):
+    board = factory.create_board()
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == []
@@ -261,10 +273,11 @@ def test_remove_workout_from_board_workout_doesnt_exist(db, client, board):
     assert r.json()['board_workouts'] == []
 
 
-def test_remove_multiple_same_workout_from_board(db, client, board):
-    workout = create_workout(db, name='Push Up')
-    bw1 = create_board_workout(db, board_id=board.id, workout_id=workout.id)
-    bw2 = create_board_workout(db, board_id=board.id, workout_id=workout.id)
+def test_remove_multiple_same_workout_from_board(client, factory):
+    board = factory.create_board()
+    workout = factory.create_workout(name='Push Up')
+    bw1 = factory.create_board_workout(board=board, workout=workout)
+    bw2 = factory.create_board_workout(board=board, workout=workout)
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
     assert r.json()['board_workouts'] == [
@@ -306,9 +319,10 @@ def test_remove_multiple_same_workout_from_board(db, client, board):
     ]
 
 
-def test_update_board_workout_values(db, client, board):
-    workout = create_workout(db, name='Push Up')
-    bw = create_board_workout(db, board_id=board.id, workout_id=workout.id)
+def test_update_board_workout_values(client, factory):
+    board = factory.create_board()
+    workout = factory.create_workout(name='Push Up')
+    bw = factory.create_board_workout(board=board, workout=workout)
     r = client.put(f'/board/{board.id}/workout/{bw.id}/', json={'sets_value': 5, 'reps_value': 20})
     assert r.status_code == 200
 
@@ -327,7 +341,8 @@ def test_update_board_workout_values(db, client, board):
     ]
 
 
-def test_update_board_workout_values_404(db, client, board):
+def test_update_board_workout_values_404(client, factory):
+    board = factory.create_board()
     r = client.put('/board/9999/workout/9999/', json={'sets_value': 5, 'reps_value': 20})
     assert r.status_code == 404
 

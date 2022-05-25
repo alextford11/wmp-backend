@@ -1,23 +1,20 @@
-from tests.conftest import create_muscle, create_workout
-
-
-def test_workout_list_no_workouts_exist(db, client):
+def test_workout_list_no_workouts_exist(client):
     r = client.get('/workouts/list/')
     assert r.status_code == 200
     assert r.json() == {'workouts': []}
 
 
-def test_workout_list_workouts_exist(db, client):
-    m1 = create_muscle(db, name='Bicep')
-    m2 = create_muscle(db, name='Chest')
-    m3 = create_muscle(db, name='Lats')
-    m4 = create_muscle(db, name='Triceps')
-    m5 = create_muscle(db, name='Shoulders')
+def test_workout_list_workouts_exist(client, factory):
+    m1 = factory.create_muscle(name='Bicep')
+    m2 = factory.create_muscle(name='Chest')
+    m3 = factory.create_muscle(name='Lats')
+    m4 = factory.create_muscle(name='Triceps')
+    m5 = factory.create_muscle(name='Shoulders')
 
-    w1 = create_workout(db, name='Push Up', muscles=[m1, m2])
-    w2 = create_workout(db, name='Pull Up', muscles=[m2, m3])
-    w3 = create_workout(db, name='Preacher Curl', muscles=[m3, m4])
-    w4 = create_workout(db, name='Bench Press', muscles=[m4, m5])
+    w1 = factory.create_workout(name='Push Up', muscles=[m1, m2])
+    w2 = factory.create_workout(name='Pull Up', muscles=[m2, m3])
+    w3 = factory.create_workout(name='Preacher Curl', muscles=[m3, m4])
+    w4 = factory.create_workout(name='Bench Press', muscles=[m4, m5])
     r = client.get('/workouts/list/')
     assert r.status_code == 200
     assert r.json() == {
