@@ -7,14 +7,14 @@ install:
 
 .PHONY: format
 format:
-	isort src/ tests/
-	$(black) src/ tests/
+	isort src/ tests/ alembic/
+	$(black) src/ tests/ alembic/
 
 .PHONY: lint
 lint:
-	flake8 src/ tests/
-	isort --check-only src/ tests/
-	$(black) --check src/ tests/
+	flake8 src/ tests/ alembic/
+	isort --check-only src/ tests/ alembic/
+	$(black) --check src/ tests/ alembic/
 
 .PHONY: reset-db
 reset-db:
@@ -31,3 +31,11 @@ rebuild-db:
 .PHONY: test
 test:
 	pytest
+
+.PHONY: makemigrations
+makemigrations:
+	alembic revision --autogenerate -m $(m)
+
+.PHONY: migrate
+migrate:
+	alembic upgrade head

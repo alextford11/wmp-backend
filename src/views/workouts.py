@@ -3,7 +3,7 @@ from requests import Session
 
 from src.database import get_db
 from src.models import Workout
-from src.schemas import WorkoutListSchema, SelectGroupInputListSchema
+from src.schemas import SelectGroupInputListSchema, WorkoutListSchema
 
 router = APIRouter(prefix='/workouts')
 
@@ -14,7 +14,7 @@ def workout_list(db: Session = Depends(get_db)):
 
 
 @router.get('/list/grouped/', response_model=SelectGroupInputListSchema)
-def workout_list(db: Session = Depends(get_db)):
+def workout_list_grouped(db: Session = Depends(get_db)):
     workouts = Workout.manager(db).order_by(Workout.name).all()
 
     muscle_workouts = {}
