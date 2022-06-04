@@ -1,5 +1,5 @@
 from src.auth import get_password_hash
-from src.models import Board, BoardWorkout, Muscle, Workout, User
+from src.models import Board, BoardWorkout, Muscle, User, Workout
 from src.settings import Settings
 
 

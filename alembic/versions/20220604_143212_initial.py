@@ -1,10 +1,10 @@
-# Revision: 926f7eb525bf, created 2022-06-01 14:36:22.372483
+# Revision: 87210865f655, created 2022-06-04 14:32:12.747210
 
 import sqlalchemy as sa
 
 from alembic import op
 
-revision = '926f7eb525bf'
+revision = '87210865f655'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -18,6 +18,17 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
+    )
+    op.create_table(
+        'users',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('email', sa.String(length=255), nullable=True),
+        sa.Column('password_hash', sa.String(length=63), nullable=True),
+        sa.Column('first_name', sa.String(length=63), nullable=True),
+        sa.Column('last_name', sa.String(length=63), nullable=True),
+        sa.Column('created', sa.DateTime(), nullable=True),
+        sa.PrimaryKeyConstraint('id'),
+        sa.UniqueConstraint('email'),
     )
     op.create_table(
         'workouts',
@@ -35,14 +46,8 @@ def upgrade():
         sa.Column('reps_value', sa.Integer(), nullable=True),
         sa.Column('measurement_value', sa.Integer(), nullable=True),
         sa.Column('measurement_unit', sa.String(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ['board_id'],
-            ['boards.id'],
-        ),
-        sa.ForeignKeyConstraint(
-            ['workout_id'],
-            ['workouts.id'],
-        ),
+        sa.ForeignKeyConstraint(['board_id'], ['boards.id']),
+        sa.ForeignKeyConstraint(['workout_id'], ['workouts.id']),
         sa.PrimaryKeyConstraint('id'),
     )
     op.create_table(
@@ -50,14 +55,8 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('workout_id', sa.Integer(), nullable=True),
         sa.Column('muscle_id', sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(
-            ['muscle_id'],
-            ['muscles.id'],
-        ),
-        sa.ForeignKeyConstraint(
-            ['workout_id'],
-            ['workouts.id'],
-        ),
+        sa.ForeignKeyConstraint(['muscle_id'], ['muscles.id']),
+        sa.ForeignKeyConstraint(['workout_id'], ['workouts.id']),
         sa.PrimaryKeyConstraint('id'),
     )
     # ### end Alembic commands ###
@@ -68,6 +67,7 @@ def downgrade():
     op.drop_table('workout_muscles')
     op.drop_table('board_workouts')
     op.drop_table('workouts')
+    op.drop_table('users')
     op.drop_table('muscles')
     op.drop_table('boards')
     # ### end Alembic commands ###

@@ -4,7 +4,7 @@ from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 from src.database import Base
-from src.models import Board, BoardWorkout, Muscle, Workout, WorkoutMuscle, User  # noqa: F401
+from src.models import Board, BoardWorkout, Muscle, User, Workout, WorkoutMuscle  # noqa: F401
 from src.settings import Settings
 
 settings = Settings()

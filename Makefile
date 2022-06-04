@@ -34,7 +34,7 @@ test:
 
 .PHONY: makemigrations
 makemigrations:
-	alembic revision --autogenerate -m $(m)
+	alembic revision --autogenerate -m "$(m)"
 
 .PHONY: migrate
 migrate:
