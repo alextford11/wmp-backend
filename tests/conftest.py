@@ -51,3 +51,8 @@ def client(db):
 @pytest.fixture
 def factory(db, settings):
     return Factory(db, settings)
+
+
+@pytest.fixture
+def user(factory):
+    return factory.create_user()

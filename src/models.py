@@ -1,11 +1,18 @@
-from sqlalchemy import Column, ForeignKey, Integer, String
+from datetime import datetime
+
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from src.crud import BaseManager
 from src.database import Base
 
 
-class WorkoutMuscle(Base):
+class CustomBaseMixin:
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class WorkoutMuscle(CustomBaseMixin, Base):
     __tablename__ = 'workout_muscles'
 
     id = Column(Integer, primary_key=True)
@@ -13,7 +20,7 @@ class WorkoutMuscle(Base):
     muscle_id = Column(Integer, ForeignKey('muscles.id'))
 
 
-class Workout(Base):
+class Workout(CustomBaseMixin, Base):
     __tablename__ = 'workouts'
 
     id = Column(Integer, primary_key=True)
@@ -25,7 +32,7 @@ class Workout(Base):
 Workout.manager = BaseManager(Workout)
 
 
-class Muscle(Base):
+class Muscle(CustomBaseMixin, Base):
     __tablename__ = 'muscles'
 
     id = Column(Integer, primary_key=True)
@@ -35,7 +42,7 @@ class Muscle(Base):
 Muscle.manager = BaseManager(Muscle)
 
 
-class BoardWorkout(Base):
+class BoardWorkout(CustomBaseMixin, Base):
     __tablename__ = 'board_workouts'
 
     id = Column(Integer, primary_key=True)
@@ -64,7 +71,7 @@ class BoardWorkout(Base):
 BoardWorkout.manager = BaseManager(BoardWorkout)
 
 
-class Board(Base):
+class Board(CustomBaseMixin, Base):
     __tablename__ = 'boards'
 
     id = Column(Integer, primary_key=True)
@@ -73,3 +80,17 @@ class Board(Base):
 
 
 Board.manager = BaseManager(Board)
+
+
+class User(CustomBaseMixin, Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    email = Column(String(255), unique=True)
+    password_hash = Column(String(63))
+    first_name = Column(String(63))
+    last_name = Column(String(63))
+    created = Column(DateTime, default=datetime.now)
+
+
+User.manager = BaseManager(User)

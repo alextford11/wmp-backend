@@ -1,4 +1,5 @@
-from src.models import Board, BoardWorkout, Muscle, Workout
+from src.auth import get_password_hash
+from src.models import Board, BoardWorkout, Muscle, Workout, User
 from src.settings import Settings
 
 
@@ -43,3 +44,19 @@ class Factory:
                 measurement_unit=measurement_unit,
             )
         )
+
+    def create_user(
+        self,
+        email: str = 'testing@example.com',
+        first_name: str = 'Billy',
+        last_name: str = 'Holiday',
+        password: str = 'testing',
+    ):
+        user_data = dict(
+            email=email,
+            password_hash=get_password_hash(password) if password is not None else None,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        user = User.manager(self.db).create(User(**user_data))
+        return user
