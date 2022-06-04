@@ -6,15 +6,10 @@ from sqlalchemy.orm import Session
 from src.crud import get_object_or_404
 from src.database import get_db
 from src.models import Board, BoardWorkout, Muscle, Workout
-from src.schemas import (
-    AddWorkoutSchema,
-    BoardGetSchema,
-    MeasurementUnits,
-    SelectGroupInputListSchema,
-    SelectInputListSchema,
-    UpdateWorkoutOrderSchema,
-    UpdateWorkoutSchema,
-)
+from src.schemas.board import BoardGetSchema
+from src.schemas.forms import SelectGroupInputListSchema, SelectInputListSchema
+from src.schemas.utils import MeasurementUnits
+from src.schemas.workouts import AddWorkoutSchema, UpdateWorkoutOrderSchema, UpdateWorkoutSchema
 
 router = APIRouter(prefix='/board')
 

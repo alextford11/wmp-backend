@@ -3,7 +3,8 @@ from requests import Session
 
 from src.database import get_db
 from src.models import Workout
-from src.schemas import SelectGroupInputListSchema, WorkoutListSchema
+from src.schemas.forms import SelectGroupInputListSchema
+from src.schemas.workouts import WorkoutListSchema
 
 router = APIRouter(prefix='/workouts')
 
