@@ -77,6 +77,7 @@ class Board(CustomBaseMixin, Base):
     id = Column(Integer, primary_key=True)
 
     board_workouts = relationship('BoardWorkout')
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
 
 
 Board.manager = BaseManager(Board)
@@ -91,6 +92,8 @@ class User(CustomBaseMixin, Base):
     first_name = Column(String(63))
     last_name = Column(String(63))
     created = Column(DateTime, default=datetime.now)
+
+    boards = relationship('Board')
 
 
 User.manager = BaseManager(User)
