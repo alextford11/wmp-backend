@@ -1,8 +1,8 @@
 # Revision: af088451bddb, created 2022-06-04 16:30:27.261241
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 revision = 'af088451bddb'
 down_revision = None
