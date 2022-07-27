@@ -1,3 +1,5 @@
+from string import punctuation, whitespace, digits, ascii_lowercase, ascii_uppercase
+
 from aenum import Enum
 
 
@@ -57,3 +59,52 @@ class MeasurementUnits(LabelledEnum):
             'Energy': [cls.CALORIE],
             'Length': [cls.KILOMETER, cls.METER, cls.CENTIMETER, cls.MILE, cls.YARD, cls.FOOT, cls.INCH],
         }
+
+
+class PasswordValidationError(ValueError):
+    pass
+
+
+class PasswordStr(str):
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate_password
+
+    @classmethod
+    def validate_password(cls, password):
+        new_password = password.strip()
+        min_size = 8
+        if len(new_password) < min_size:
+            raise PasswordValidationError(f'Password must be longer than {min_size} characters.')
+
+        valid_chars = {'-', '_', '.', '!', '@', '#', '$', '^', '&', '(', ')'}
+        invalid_chars = set(punctuation + whitespace) - valid_chars
+        for char in invalid_chars:
+            if char in new_password:
+                raise PasswordValidationError('Password contains some invalid characters.')
+
+        password_has_digit = False
+        for char in password:
+            if char in digits:
+                password_has_digit = True
+                break
+        if not password_has_digit:
+            raise PasswordValidationError('Password must contain at least one number.')
+
+        password_has_lowercase = False
+        for char in password:
+            if char in ascii_lowercase:
+                password_has_lowercase = True
+                break
+        if not password_has_lowercase:
+            raise PasswordValidationError('Password must contain at least one lowercase character.')
+
+        password_has_uppercase = False
+        for char in password:
+            if char in ascii_uppercase:
+                password_has_uppercase = True
+                break
+        if not password_has_uppercase:
+            raise PasswordValidationError('Password must contain at least one uppercase character.')
+
+        return new_password

@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+
+from src.schemas.utils import PasswordStr
 
 
 class Token(BaseModel):
@@ -11,8 +13,8 @@ class TokenData(BaseModel):
 
 
 class UserSignup(BaseModel):
-    email: str
-    password: str
+    email: EmailStr
+    password: PasswordStr
     first_name: str
     last_name: str
 

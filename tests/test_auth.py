@@ -61,10 +61,9 @@ def test_signup_no_data_posted(client):
 def test_signup_create_user_access_token_returned(client):
     r = client.post(
         '/signup/',
-        json={'first_name': 'John', 'last_name': 'Smith', 'email': 'testing@example.com', 'password': 'testing'},
+        json={'first_name': 'John', 'last_name': 'Smith', 'email': 'testing@example.com', 'password': 'Testing123'},
     )
     assert r.status_code == 200
-
     assert len(r.json()['access_token']) == 143
     assert r.json()['token_type'] == 'bearer'
 
@@ -72,7 +71,74 @@ def test_signup_create_user_access_token_returned(client):
 def test_signup_user_already_exists(client, user):
     r = client.post(
         '/signup/',
-        json={'first_name': 'John', 'last_name': 'Smith', 'email': 'testing@example.com', 'password': 'testing'},
+        json={'first_name': 'John', 'last_name': 'Smith', 'email': 'testing@example.com', 'password': 'Testing123'},
     )
     assert r.status_code == 400
     assert r.json() == {'detail': 'User with this email already exists'}
+
+
+def test_signup_user_password_validation(client):
+    data = {'first_name': 'John', 'last_name': 'Smith', 'email': 'testing@example.com', 'password': 'testing'}
+    r = client.post('/signup/', json=data)
+    assert r.status_code == 422
+    assert r.json() == {
+        'detail': [
+            {
+                'loc': ['body', 'password'],
+                'msg': 'Password must be longer than 8 characters.',
+                'type': 'value_error.passwordvalidation',
+            }
+        ]
+    }
+
+    data['password'] = 'testing='
+    r = client.post('/signup/', json=data)
+    assert r.status_code == 422
+    assert r.json() == {
+        'detail': [
+            {
+                'loc': ['body', 'password'],
+                'msg': 'Password contains some invalid characters.',
+                'type': 'value_error.passwordvalidation',
+            }
+        ]
+    }
+
+    data['password'] = 'testingpassword'
+    r = client.post('/signup/', json=data)
+    assert r.status_code == 422
+    assert r.json() == {
+        'detail': [
+            {
+                'loc': ['body', 'password'],
+                'msg': 'Password must contain at least one number.',
+                'type': 'value_error.passwordvalidation',
+            }
+        ]
+    }
+
+    data['password'] = 'testing123'
+    r = client.post('/signup/', json=data)
+    assert r.status_code == 422
+    assert r.json() == {
+        'detail': [
+            {
+                'loc': ['body', 'password'],
+                'msg': 'Password must contain at least one uppercase character.',
+                'type': 'value_error.passwordvalidation',
+            }
+        ]
+    }
+
+    data['password'] = 'TESTING123'
+    r = client.post('/signup/', json=data)
+    assert r.status_code == 422
+    assert r.json() == {
+        'detail': [
+            {
+                'loc': ['body', 'password'],
+                'msg': 'Password must contain at least one lowercase character.',
+                'type': 'value_error.passwordvalidation',
+            }
+        ]
+    }

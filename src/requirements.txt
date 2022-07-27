@@ -8,7 +8,7 @@ pydantic[email]==1.9.1
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.5
 requests==2.28.1
-starlette==0.20.4
+starlette==0.19.1
 SQLAlchemy==1.4.39
 typer==0.4.1
 uvicorn==0.18.2

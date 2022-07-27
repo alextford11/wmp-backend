@@ -16,7 +16,9 @@ router = APIRouter()
 
 
 @router.post('/login/', response_model=Token)
-async def login_for_access_token(db: Session = Depends(get_db), data: OAuth2PasswordRequestForm = Depends()):
+async def login_for_access_token(
+    data: OAuth2PasswordRequestForm = Depends(OAuth2PasswordRequestForm), db: Session = Depends(get_db)
+):
     user = await authenticate_user(db, data.username, data.password)
     if not user:
         raise HTTPException(
