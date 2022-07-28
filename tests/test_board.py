@@ -8,11 +8,8 @@ def test_create_board_no_user(client, db):
     assert not Board.manager(db).get().user_id
 
 
-def test_create_board_with_user(client, db, user):
-    r = client.post('/login/', data={'username': 'testing@example.com', 'password': 'testing'})
-    assert r.status_code == 200
-
-    access_token = r.json()['access_token']
+def test_create_board_with_user(client, db, user, factory):
+    access_token = factory.get_user_access_token(user)
     r = client.post('/board/create/', json={'user_access_token': access_token})
     assert r.status_code == 200
     assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': 1}
@@ -420,5 +417,34 @@ def test_get_measurement_unit_lists(client):
                     {'label': 'Inches', 'value': 'in'},
                 ],
             },
+        ]
+    }
+
+
+def test_board_list_view_for_user(client, factory, user):
+    user_access_token = factory.get_user_access_token(user)
+    board = factory.create_board(user_id=user.id)
+    workout = factory.create_workout()
+    bw = factory.create_board_workout(board=board, workout=workout)
+    r = client.get('/user/boards/', headers={'Authorization': 'Bearer ' + user_access_token})
+    assert r.status_code == 200
+    assert r.json() == {
+        'boards': [
+            {
+                'id': board.id,
+                'board_workouts': [
+                    {
+                        'id': bw.id,
+                        'sort_value': 1,
+                        'workout': {'id': workout.id, 'name': 'Bench Press', 'related_muscles': []},
+                        'sets_value': 3,
+                        'reps_value': 10,
+                        'measurement_value': 10,
+                        'measurement_unit': 'kg',
+                    }
+                ],
+                'board_workout_order': [],
+                'board_muscle_counts': {},
+            }
         ]
     }

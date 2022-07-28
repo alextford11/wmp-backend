@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from src.auth import get_current_user
 from src.database import get_db
 from src.exceptions import IntegrityException
-from src.models import User
+from src.models import User, Board
+from src.schemas.board import BoardListSchema
 from src.schemas.users import GetUserProfile, UpdateUserProfile
 
 router = APIRouter(prefix='/user')
@@ -30,3 +31,8 @@ async def update_user(
         except IntegrityError:
             raise IntegrityException(detail='User with this email already exists')
     return {'detail': 'Profile updated successfully'}
+
+
+@router.get('/boards/', response_model=BoardListSchema)
+async def get_board(db: Session = Depends(get_db), user: GetUserProfile = Depends(get_current_user)):
+    return {'boards': Board.manager(db).filter(user_id=user.id).all()}

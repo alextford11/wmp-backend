@@ -20,3 +20,10 @@ class CreateBoardSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class BoardListSchema(BaseModel):
+    boards: list[BoardGetSchema] = []
+
+    class Config:
+        orm_mode = True

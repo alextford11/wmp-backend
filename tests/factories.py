@@ -1,4 +1,6 @@
-from src.auth import get_password_hash
+from datetime import timedelta
+
+from src.auth import get_password_hash, create_access_token
 from src.models import Board, BoardWorkout, Muscle, User, Workout
 from src.settings import Settings
 
@@ -8,8 +10,8 @@ class Factory:
         self.db = db
         self.settings = settings
 
-    def create_board(self):
-        return Board.manager(self.db).create(Board())
+    def create_board(self, user_id: int = None):
+        return Board.manager(self.db).create(Board(user_id=user_id))
 
     def create_muscle(self, name: str = 'Bicep'):
         return Muscle.manager(self.db).create(Muscle(name=name))
@@ -60,3 +62,7 @@ class Factory:
         )
         user = User.manager(self.db).create(User(**user_data))
         return user
+
+    def get_user_access_token(self, user):
+        access_token_expires = timedelta(seconds=self.settings.auth_access_token_expiry_seconds)
+        return create_access_token(data={'sub': user.email}, expires_delta=access_token_expires)
