@@ -3,10 +3,11 @@ from operator import itemgetter
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.auth import get_token_data, get_user_with_token_data
 from src.crud import get_object_or_404
 from src.database import get_db
 from src.models import Board, BoardWorkout, Muscle, Workout
-from src.schemas.board import BoardGetSchema
+from src.schemas.board import BoardGetSchema, CreateBoardSchema
 from src.schemas.forms import SelectGroupInputListSchema, SelectInputListSchema
 from src.schemas.utils import MeasurementUnits
 from src.schemas.workouts import AddWorkoutSchema, UpdateWorkoutOrderSchema, UpdateWorkoutSchema
@@ -15,8 +16,13 @@ router = APIRouter(prefix='/board')
 
 
 @router.post('/create/', response_model=BoardGetSchema)
-async def create_board(db: Session = Depends(get_db)):
-    board = Board()
+async def create_board(data: CreateBoardSchema, db: Session = Depends(get_db)):
+    board_data = {}
+    if data.user_access_token:
+        token_data = get_token_data(data.user_access_token)
+        user = await get_user_with_token_data(db, token_data)
+        board_data = {'user_id': user.id}
+    board = Board(**board_data)
     board = Board.manager(db).create(board)
     return board
 

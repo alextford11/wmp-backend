@@ -56,21 +56,40 @@ async def get_user_full(db: Session, email: str) -> Optional[GetUserProfile]:
         return GetUserProfile(**user.as_dict())
 
 
+def get_token_data(token, exception=None):
+    payload = jwt.decode(token, settings.auth_secret_key, algorithms=[HASH_ALGORITHM])
+    email: str = payload.get('sub')
+    if exception and email is None:
+        raise exception
+    return TokenData(email=email)
+
+
+async def get_user_with_token_data(db, token_data, exception=None):
+    user = await get_user_full(db, email=token_data.email)
+    if exception and user is None:
+        raise exception
+    return user
+
+
 async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)) -> GetUserProfile:
+    """
+    If no user found for the token, then raise a 401
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail='Could not validate credentials',
         headers={'WWW-Authenticate': 'Bearer'},
     )
     try:
-        payload = jwt.decode(token, settings.auth_secret_key, algorithms=[HASH_ALGORITHM])
-        email: str = payload.get('sub')
-        if email is None:
-            raise credentials_exception
-        token_data = TokenData(email=email)
+        token_data = get_token_data(token, exception=credentials_exception)
     except JWTError:
         raise credentials_exception
-    user = await get_user_full(db, email=token_data.email)
-    if user is None:
-        raise credentials_exception
-    return user
+    else:
+        return await get_user_with_token_data(db, token_data, exception=credentials_exception)
+
+
+async def get_current_user_or_none(
+    db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
+) -> GetUserProfile:
+    token_data = get_token_data(token)
+    return await get_user_with_token_data(db, token_data)

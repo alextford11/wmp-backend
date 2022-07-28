@@ -1,7 +1,22 @@
-def test_create_board(client):
-    r = client.post('/board/create/')
+from src.models import Board
+
+
+def test_create_board_no_user(client, db):
+    r = client.post('/board/create/', json={'user_access_token': None})
+    assert r.status_code == 200, r.json()
+    assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': 1}
+    assert not Board.manager(db).get().user_id
+
+
+def test_create_board_with_user(client, db, user):
+    r = client.post('/login/', data={'username': 'testing@example.com', 'password': 'testing'})
+    assert r.status_code == 200
+
+    access_token = r.json()['access_token']
+    r = client.post('/board/create/', json={'user_access_token': access_token})
     assert r.status_code == 200
     assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': 1}
+    assert Board.manager(db).get().user_id == user.id
 
 
 def test_get_board(client, factory):
