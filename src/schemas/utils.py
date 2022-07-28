@@ -1,4 +1,4 @@
-from string import punctuation, whitespace, digits, ascii_lowercase, ascii_uppercase
+from string import ascii_lowercase, ascii_uppercase, digits, punctuation, whitespace
 
 from aenum import Enum
 
