@@ -75,6 +75,8 @@ class Board(CustomBaseMixin, Base):
     __tablename__ = 'boards'
 
     id = Column(Integer, primary_key=True)
+    name = Column(String(255))
+    created = Column(DateTime, default=datetime.now)
 
     board_workouts = relationship('BoardWorkout')
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)

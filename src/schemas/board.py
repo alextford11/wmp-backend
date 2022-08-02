@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel
@@ -7,6 +8,8 @@ from src.schemas.workouts import BoardWorkoutSchema
 
 class BoardGetSchema(BaseModel):
     id: int
+    name: Optional[str]
+    created: datetime
     board_workouts: list[BoardWorkoutSchema] = []
     board_workout_order: list[int] = []
     board_muscle_counts: dict = {}
@@ -24,6 +27,13 @@ class CreateBoardSchema(BaseModel):
 
 class BoardListSchema(BaseModel):
     boards: list[BoardGetSchema] = []
+
+    class Config:
+        orm_mode = True
+
+
+class UpdateBoardNameSchema(BaseModel):
+    name: str
 
     class Config:
         orm_mode = True

@@ -1,10 +1,21 @@
+from datetime import datetime
+
+from dirty_equals import IsDatetime, IsNow
+
 from src.models import Board
 
 
 def test_create_board_no_user(client, db):
     r = client.post('/board/create/', json={'user_access_token': None})
     assert r.status_code == 200, r.json()
-    assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': 1}
+    assert r.json() == {
+        'board_workouts': [],
+        'board_workout_order': [],
+        'board_muscle_counts': {},
+        'name': None,
+        'created': IsNow(format_string='%Y-%m-%dT%H:%M:%S.%f'),
+        'id': 1,
+    }
     assert not Board.manager(db).get().user_id
 
 
@@ -12,7 +23,14 @@ def test_create_board_with_user(client, db, user, factory):
     access_token = factory.get_user_access_token(user)
     r = client.post('/board/create/', json={'user_access_token': access_token})
     assert r.status_code == 200
-    assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': 1}
+    assert r.json() == {
+        'board_workouts': [],
+        'board_workout_order': [],
+        'board_muscle_counts': {},
+        'name': None,
+        'created': IsNow(format_string='%Y-%m-%dT%H:%M:%S.%f'),
+        'id': 1,
+    }
     assert Board.manager(db).get().user_id == user.id
 
 
@@ -20,7 +38,14 @@ def test_get_board(client, factory):
     board = factory.create_board()
     r = client.get(f'/board/{board.id}/')
     assert r.status_code == 200
-    assert r.json() == {'board_workouts': [], 'board_workout_order': [], 'board_muscle_counts': {}, 'id': board.id}
+    assert r.json() == {
+        'board_workouts': [],
+        'board_workout_order': [],
+        'board_muscle_counts': {},
+        'name': None,
+        'created': IsNow(format_string='%Y-%m-%dT%H:%M:%S.%f'),
+        'id': board.id,
+    }
 
 
 def test_get_board_404(client, factory):
@@ -53,6 +78,8 @@ def test_get_board_with_workouts(client, factory):
         ],
         'board_workout_order': [board_workout.id],
         'board_muscle_counts': {'Bicep': 1},
+        'name': None,
+        'created': IsNow(format_string='%Y-%m-%dT%H:%M:%S.%f'),
         'id': board.id,
     }
 
@@ -100,6 +127,8 @@ def test_get_board_with_multiple_workouts(client, factory):
         ],
         'board_workout_order': [board_workout1.id, board_workout2.id],
         'board_muscle_counts': {'Bicep': 2, 'Chest': 1},
+        'name': None,
+        'created': IsNow(format_string='%Y-%m-%dT%H:%M:%S.%f'),
         'id': board.id,
     }
 
@@ -432,6 +461,8 @@ def test_board_list_view_for_user(client, factory, user):
         'boards': [
             {
                 'id': board.id,
+                'name': None,
+                'created': IsNow(format_string='%Y-%m-%dT%H:%M:%S.%f'),
                 'board_workouts': [
                     {
                         'id': bw.id,
@@ -447,4 +478,36 @@ def test_board_list_view_for_user(client, factory, user):
                 'board_muscle_counts': {},
             }
         ]
+    }
+
+
+def test_update_board_name_no_user(client, factory):
+    board = factory.create_board()
+    assert not board.name
+
+    r = client.post(f'/board/{board.id}/name/', json={'name': 'Testing Name'})
+    assert r.status_code == 200, r.json()
+    assert r.json() == {
+        'board_workouts': [],
+        'board_workout_order': [],
+        'board_muscle_counts': {},
+        'name': 'Testing Name',
+        'created': IsNow(format_string='%Y-%m-%dT%H:%M:%S.%f'),
+        'id': 1,
+    }
+
+
+def test_update_board_name_with_user(client, factory, user):
+    board = factory.create_board(user_id=user.id)
+    assert not board.name
+
+    r = client.post(f'/board/{board.id}/name/', json={'name': 'Testing Name'})
+    assert r.status_code == 200, r.json()
+    assert r.json() == {
+        'board_workouts': [],
+        'board_workout_order': [],
+        'board_muscle_counts': {},
+        'name': 'Testing Name',
+        'created': IsNow(format_string='%Y-%m-%dT%H:%M:%S.%f'),
+        'id': 1,
     }

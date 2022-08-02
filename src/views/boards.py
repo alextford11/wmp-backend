@@ -7,7 +7,7 @@ from src.auth import get_token_data, get_user_with_token_data
 from src.crud import get_object_or_404
 from src.database import get_db
 from src.models import Board, BoardWorkout, Muscle, Workout
-from src.schemas.board import BoardGetSchema, CreateBoardSchema
+from src.schemas.board import BoardGetSchema, CreateBoardSchema, UpdateBoardNameSchema
 from src.schemas.forms import SelectGroupInputListSchema, SelectInputListSchema
 from src.schemas.utils import MeasurementUnits
 from src.schemas.workouts import AddWorkoutSchema, UpdateWorkoutOrderSchema, UpdateWorkoutSchema
@@ -30,7 +30,9 @@ async def create_board(data: CreateBoardSchema, db: Session = Depends(get_db)):
 @router.get('/{board_id}/', response_model=BoardGetSchema)
 async def get_board(board_id: int, db: Session = Depends(get_db)):
     board = get_object_or_404(db, Board, id=board_id)
-    board_data = BoardGetSchema(id=board.id, board_workouts=board.board_workouts).dict()
+    board_data = BoardGetSchema(
+        id=board.id, name=board.name, created=board.created, board_workouts=board.board_workouts
+    ).dict()
     board_data['board_workout_order'] = [
         workout['id'] for workout in sorted(board_data['board_workouts'], key=itemgetter('sort_value'))
     ]
@@ -104,3 +106,11 @@ async def get_categorised_measurement_units_list():
             for group, units in MeasurementUnits.get_categories().items()
         ]
     }
+
+
+@router.post('/{board_id}/name/', response_model=BoardGetSchema)
+async def update_board_name(board_id: int, data: UpdateBoardNameSchema, db: Session = Depends(get_db)):
+    board = get_object_or_404(db, Board, id=board_id)
+    board.name = data.name
+    Board.manager(db).update(board)
+    return board
