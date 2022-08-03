@@ -23,6 +23,7 @@ class BoardWorkoutSchema(BaseModel):
     reps_value: int
     measurement_value: int
     measurement_unit: MeasurementUnits
+    notes: Optional[str]
 
     class Config:
         orm_mode = True
@@ -41,6 +42,7 @@ class UpdateWorkoutSchema(BaseModel):
     reps_value: Optional[int] = None
     measurement_value: Optional[int] = None
     measurement_unit: Optional[MeasurementUnits] = None
+    notes: Optional[str] = None
 
 
 class WorkoutListSchema(BaseModel):

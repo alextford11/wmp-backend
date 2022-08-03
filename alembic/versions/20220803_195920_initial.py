@@ -1,10 +1,10 @@
-# Revision: af088451bddb, created 2022-06-04 16:30:27.261241
-
-import sqlalchemy as sa
+# Revision: a669c4aaeae3, created 2022-08-03 19:59:20.920637
 
 from alembic import op
+import sqlalchemy as sa
 
-revision = 'af088451bddb'
+
+revision = 'a669c4aaeae3'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,6 +38,8 @@ def upgrade():
     op.create_table(
         'boards',
         sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(length=255), nullable=True),
+        sa.Column('created', sa.DateTime(), nullable=True),
         sa.Column('user_id', sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(['user_id'], ['users.id']),
         sa.PrimaryKeyConstraint('id'),
@@ -61,6 +63,7 @@ def upgrade():
         sa.Column('reps_value', sa.Integer(), nullable=True),
         sa.Column('measurement_value', sa.Integer(), nullable=True),
         sa.Column('measurement_unit', sa.String(), nullable=True),
+        sa.Column('notes', sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(['board_id'], ['boards.id']),
         sa.ForeignKeyConstraint(['workout_id'], ['workouts.id']),
         sa.PrimaryKeyConstraint('id'),

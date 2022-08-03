@@ -74,6 +74,7 @@ def test_get_board_with_workouts(client, factory):
                 'reps_value': 10,
                 'measurement_value': 10,
                 'measurement_unit': 'kg',
+                'notes': None,
             }
         ],
         'board_workout_order': [board_workout.id],
@@ -110,6 +111,7 @@ def test_get_board_with_multiple_workouts(client, factory):
                 'reps_value': 10,
                 'measurement_value': 10,
                 'measurement_unit': 'kg',
+                'notes': None,
             },
             {
                 'id': board_workout2.id,
@@ -123,6 +125,7 @@ def test_get_board_with_multiple_workouts(client, factory):
                 'reps_value': 10,
                 'measurement_value': 10,
                 'measurement_unit': 'kg',
+                'notes': None,
             },
         ],
         'board_workout_order': [board_workout1.id, board_workout2.id],
@@ -228,6 +231,7 @@ def test_add_workout_to_board(client, factory):
             'reps_value': 10,
             'measurement_value': 10,
             'measurement_unit': 'kg',
+            'notes': None,
         },
     ]
 
@@ -282,6 +286,7 @@ def test_remove_workout_from_board(client, factory):
             'reps_value': 10,
             'measurement_value': 10,
             'measurement_unit': 'kg',
+            'notes': None,
         }
     ]
 
@@ -330,6 +335,7 @@ def test_remove_multiple_same_workout_from_board(client, factory):
             'reps_value': 10,
             'measurement_value': 10,
             'measurement_unit': 'kg',
+            'notes': None,
         },
         {
             'id': bw2.id,
@@ -339,6 +345,7 @@ def test_remove_multiple_same_workout_from_board(client, factory):
             'reps_value': 10,
             'measurement_value': 10,
             'measurement_unit': 'kg',
+            'notes': None,
         },
     ]
 
@@ -356,6 +363,7 @@ def test_remove_multiple_same_workout_from_board(client, factory):
             'reps_value': 10,
             'measurement_value': 10,
             'measurement_unit': 'kg',
+            'notes': None,
         }
     ]
 
@@ -364,7 +372,10 @@ def test_update_board_workout_values(client, factory):
     board = factory.create_board()
     workout = factory.create_workout(name='Push Up')
     bw = factory.create_board_workout(board=board, workout=workout)
-    r = client.put(f'/board/{board.id}/workout/{bw.id}/', json={'sets_value': 5, 'reps_value': 20})
+    r = client.put(
+        f'/board/{board.id}/workout/{bw.id}/',
+        json={'sets_value': 5, 'reps_value': 20, 'notes': 'Test adding some notes to the workout'},
+    )
     assert r.status_code == 200
 
     r = client.get(f'/board/{board.id}/')
@@ -378,6 +389,7 @@ def test_update_board_workout_values(client, factory):
             'reps_value': 20,
             'measurement_value': 10,
             'measurement_unit': 'kg',
+            'notes': 'Test adding some notes to the workout',
         }
     ]
 
@@ -472,6 +484,7 @@ def test_board_list_view_for_user(client, factory, user):
                         'reps_value': 10,
                         'measurement_value': 10,
                         'measurement_unit': 'kg',
+                        'notes': None,
                     }
                 ],
                 'board_workout_order': [],
