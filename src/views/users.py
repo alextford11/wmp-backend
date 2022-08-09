@@ -35,4 +35,4 @@ async def update_user(
 
 @router.get('/boards/', response_model=BoardListSchema)
 async def get_board(db: Session = Depends(get_db), user: GetUserProfile = Depends(get_current_user)):
-    return {'boards': Board.manager(db).filter(user_id=user.id).all()}
+    return {'boards': Board.manager(db).filter(user_id=user.id).order_by(Board.created.desc()).all()}
