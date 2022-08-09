@@ -1,6 +1,4 @@
-from datetime import datetime
-
-from dirty_equals import IsDatetime, IsNow
+from dirty_equals import IsNow
 
 from src.models import Board
 

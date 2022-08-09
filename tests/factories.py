@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from src.auth import get_password_hash, create_access_token
+from src.auth import create_access_token, get_password_hash
 from src.models import Board, BoardWorkout, Muscle, User, Workout
 from src.settings import Settings
 

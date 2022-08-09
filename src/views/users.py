@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.auth import get_current_user
 from src.database import get_db
 from src.exceptions import IntegrityException
-from src.models import User, Board
+from src.models import Board, User
 from src.schemas.board import BoardListSchema
 from src.schemas.users import GetUserProfile, UpdateUserProfile
 

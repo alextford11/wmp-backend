@@ -1,8 +1,8 @@
 # Revision: a669c4aaeae3, created 2022-08-03 19:59:20.920637
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 revision = 'a669c4aaeae3'
 down_revision = None
