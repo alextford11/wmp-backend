@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from src.auth import get_current_user
+from src.crud import get_object_or_404
 from src.database import get_db
 from src.exceptions import IntegrityException
 from src.models import Board, User
@@ -36,3 +37,10 @@ async def update_user(
 @router.get('/boards/', response_model=BoardListSchema)
 async def get_board(db: Session = Depends(get_db), user: GetUserProfile = Depends(get_current_user)):
     return {'boards': Board.manager(db).filter(user_id=user.id).order_by(Board.created.desc()).all()}
+
+
+@router.delete('/boards/{board_id}/', status_code=200)
+async def delete_board(board_id: int, db: Session = Depends(get_db), user: GetUserProfile = Depends(get_current_user)):
+    get_object_or_404(db, Board, id=board_id, user_id=user.id)
+    Board.manager(db).delete(id=board_id)
+    return

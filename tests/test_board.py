@@ -527,3 +527,23 @@ def test_update_board_name_with_user(client, factory, user):
         'created': IsNow(format_string='%Y-%m-%dT%H:%M:%S.%f'),
         'id': 1,
     }
+
+
+def test_delete_user_board(client, db, factory, user):
+    user_access_token = factory.get_user_access_token(user)
+    board = factory.create_board(user_id=user.id)
+    r = client.delete(f'/user/boards/{board.id}/', headers={'Authorization': 'Bearer ' + user_access_token})
+    assert r.status_code == 200
+    assert not Board.manager(db).exists(id=board.id)
+
+
+def test_delete_user_board_404(client, db, factory, user):
+    user_access_token = factory.get_user_access_token(user)
+    board = factory.create_board(user_id=user.id)
+    r = client.delete(f'/user/boards/{board.id}/', headers={'Authorization': 'Bearer abc123'})
+    assert r.status_code == 401
+    assert Board.manager(db).exists(id=board.id)
+
+    r = client.delete(f'/user/boards/9999/', headers={'Authorization': 'Bearer ' + user_access_token})
+    assert r.status_code == 404
+    assert Board.manager(db).exists(id=board.id)
