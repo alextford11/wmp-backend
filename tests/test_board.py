@@ -1,6 +1,6 @@
 from dirty_equals import IsNow
 
-from src.models import Board
+from src.models import Board, BoardWorkout, Workout
 
 
 def test_create_board_no_user(client, db):
@@ -532,9 +532,13 @@ def test_update_board_name_with_user(client, factory, user):
 def test_delete_user_board(client, db, factory, user):
     user_access_token = factory.get_user_access_token(user)
     board = factory.create_board(user_id=user.id)
+    workout = factory.create_workout()
+    factory.create_board_workout(board=board, workout=workout)
     r = client.delete(f'/user/boards/{board.id}/', headers={'Authorization': 'Bearer ' + user_access_token})
     assert r.status_code == 200
-    assert not Board.manager(db).exists(id=board.id)
+    assert not Board.manager(db).exists()
+    assert not BoardWorkout.manager(db).exists()
+    assert Workout.manager(db).exists(id=workout.id)
 
 
 def test_delete_user_board_404(client, db, factory, user):

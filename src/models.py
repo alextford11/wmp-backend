@@ -47,7 +47,7 @@ class BoardWorkout(CustomBaseMixin, Base):
 
     id = Column(Integer, primary_key=True)
     sort_value = Column(Integer, default=1)
-    board_id = Column(Integer, ForeignKey('boards.id'))
+    board_id = Column(Integer, ForeignKey('boards.id', ondelete='CASCADE'))
     workout_id = Column(Integer, ForeignKey('workouts.id'))
     sets_value = Column(Integer, default=3)
     reps_value = Column(Integer, default=10)
