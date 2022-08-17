@@ -372,7 +372,12 @@ def test_update_board_workout_values(client, factory):
     bw = factory.create_board_workout(board=board, workout=workout)
     r = client.put(
         f'/board/{board.id}/workout/{bw.id}/',
-        json={'sets_value': 5, 'reps_value': 20, 'notes': 'Test adding some notes to the workout'},
+        json={
+            'sets_value': 5,
+            'reps_value': 20,
+            'measurement_value': 12.5,
+            'notes': 'Test adding some notes to the workout',
+        },
     )
     assert r.status_code == 200
 
@@ -385,7 +390,7 @@ def test_update_board_workout_values(client, factory):
             'workout': {'id': workout.id, 'name': 'Push Up', 'related_muscles': []},
             'sets_value': 5,
             'reps_value': 20,
-            'measurement_value': 10,
+            'measurement_value': 12.5,
             'measurement_unit': 'kg',
             'notes': 'Test adding some notes to the workout',
         }

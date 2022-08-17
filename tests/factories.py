@@ -30,7 +30,7 @@ class Factory:
         sort_value: int = None,
         sets_value: int = 3,
         reps_value: int = 10,
-        measurement_value: int = 10,
+        measurement_value: float = 10,
         measurement_unit: str = 'kg',
     ):
         board = board or self.create_board()

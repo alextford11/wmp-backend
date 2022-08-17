@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, Float, DECIMAL
 from sqlalchemy.orm import relationship
 
 from src.crud import BaseManager
@@ -51,7 +51,7 @@ class BoardWorkout(CustomBaseMixin, Base):
     workout_id = Column(Integer, ForeignKey('workouts.id'))
     sets_value = Column(Integer, default=3)
     reps_value = Column(Integer, default=10)
-    measurement_value = Column(Integer, default=10)
+    measurement_value = Column(DECIMAL(precision=12, scale=6), default=10)
     measurement_unit = Column(String, default='kg')
     notes = Column(Text)
 

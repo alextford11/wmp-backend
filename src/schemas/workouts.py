@@ -21,7 +21,7 @@ class BoardWorkoutSchema(BaseModel):
     workout: WorkoutSchema
     sets_value: int
     reps_value: int
-    measurement_value: int
+    measurement_value: float
     measurement_unit: MeasurementUnits
     notes: Optional[str]
 
@@ -40,7 +40,7 @@ class AddWorkoutSchema(BaseModel):
 class UpdateWorkoutSchema(BaseModel):
     sets_value: Optional[int] = None
     reps_value: Optional[int] = None
-    measurement_value: Optional[int] = None
+    measurement_value: Optional[float] = None
     measurement_unit: Optional[MeasurementUnits] = None
     notes: Optional[str] = None
 
