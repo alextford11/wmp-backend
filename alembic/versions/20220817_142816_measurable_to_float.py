@@ -1,8 +1,8 @@
 # Revision: dc661bf4ff6e, created 2022-08-17 14:28:16.148326
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 revision = 'dc661bf4ff6e'
 down_revision = 'a669c4aaeae3'

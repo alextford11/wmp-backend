@@ -548,6 +548,6 @@ def test_delete_user_board_404(client, db, factory, user):
     assert r.status_code == 401
     assert Board.manager(db).exists(id=board.id)
 
-    r = client.delete(f'/user/boards/9999/', headers={'Authorization': 'Bearer ' + user_access_token})
+    r = client.delete('/user/boards/9999/', headers={'Authorization': 'Bearer ' + user_access_token})
     assert r.status_code == 404
     assert Board.manager(db).exists(id=board.id)
