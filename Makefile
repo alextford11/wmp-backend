@@ -30,7 +30,7 @@ build-db:
 .PHONY: rebuild-db
 rebuild-db:
 	make reset-db
-	python manage.py build-workouts
+	make build-db
 
 .PHONY: test
 test:

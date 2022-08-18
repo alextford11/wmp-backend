@@ -428,6 +428,12 @@
       ]
     },
     {
+      "name": "Dumbbell Preacher Curl",
+      "muscles": [
+        "muscle_1"
+      ]
+    },
+    {
       "name": "Bent-Over Rear Delt Fly",
       "muscles": [
         "muscle_2"

@@ -25,27 +25,33 @@ def build_workouts():
     workouts = data['workouts']
 
     db = get_session()()
-    created_count, updated_count = 0, 0
+    created_count, unchanged_count = 0, 0
     for muscle_var_name, muscle_name in muscles.items():
         muscle_obj, created = Muscle.manager(db).get_or_create(name=muscle_name)
         muscle_obj_lu[muscle_var_name] = muscle_obj
         if created:
             created_count += 1
         else:
-            updated_count += 1
-    typer.echo(f'Created {created_count}, updated {updated_count} Muscles')
+            unchanged_count += 1
+    typer.echo(f'Created {created_count}, {unchanged_count} Muscles left unchanged')
 
-    created_count, updated_count = 0, 0
+    created_count, updated_count, unchanged_count = 0, 0, 0
     for workout in workouts:
+        updated = False
         workout_obj, created = Workout.manager(db).get_or_create(name=workout['name'])
+        related_muscles = workout_obj.related_muscles
         for muscle_var in workout['muscles']:
-            workout_obj.related_muscles.append(muscle_obj_lu[muscle_var])
+            if (muscle := muscle_obj_lu[muscle_var]) not in related_muscles:
+                updated = not created
+                workout_obj.related_muscles.append(muscle)
         Workout.manager(db).update(workout_obj)
         if created:
             created_count += 1
-        else:
+        elif updated:
             updated_count += 1
-    typer.echo(f'Created {created_count}, updated {updated_count} Workouts')
+        else:
+            unchanged_count += 1
+    typer.echo(f'Created {created_count}, updated {updated_count} Workouts, {unchanged_count} Muscles left unchanged')
 
 
 if __name__ == '__main__':
