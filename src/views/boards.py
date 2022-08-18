@@ -96,7 +96,8 @@ async def update_board_workout(
                 if field in record_fields:
                     values_updated = True
     BoardWorkout.manager(db).update(board_workout)
-    if values_updated:
+    if values_updated or not BoardWorkoutRecord.manager(db).exists(board_workout_id=board_workout.id):
+        # create record when at least one field has been changed or no record exists yet
         bwr = BoardWorkoutRecord(
             board_workout_id=board_workout.id, **{f: getattr(board_workout, f) for f in record_fields}
         )
