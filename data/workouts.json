@@ -382,6 +382,12 @@
       ]
     },
     {
+      "name": "Leg Curl",
+      "muscles": [
+        "muscle_12"
+      ]
+    },
+    {
       "name": "Treadmill",
       "muscles": [
         "muscle_13",
