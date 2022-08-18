@@ -1,8 +1,6 @@
 # Revision: 8ee8c87ea62a, created 2022-08-17 19:39:09.163634
 
 from alembic import op
-import sqlalchemy as sa
-
 
 revision = '8ee8c87ea62a'
 down_revision = 'dc661bf4ff6e'
