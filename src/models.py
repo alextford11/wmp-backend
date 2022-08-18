@@ -56,6 +56,7 @@ class BoardWorkout(CustomBaseMixin, Base):
     notes = Column(Text)
 
     workout = relationship('Workout')
+    records = relationship('BoardWorkoutRecord')
 
     def pre_create(self, db):
         if not self.sort_value:
@@ -77,7 +78,7 @@ class Board(CustomBaseMixin, Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
-    created = Column(DateTime, default=datetime.now)
+    created = Column(DateTime, default=datetime.utcnow)
 
     board_workouts = relationship('BoardWorkout')
     user_id = Column(Integer, ForeignKey('users.id'), nullable=True)
@@ -94,9 +95,24 @@ class User(CustomBaseMixin, Base):
     password_hash = Column(String(63))
     first_name = Column(String(63))
     last_name = Column(String(63))
-    created = Column(DateTime, default=datetime.now)
+    created = Column(DateTime, default=datetime.utcnow)
 
     boards = relationship('Board')
 
 
 User.manager = BaseManager(User)
+
+
+class BoardWorkoutRecord(CustomBaseMixin, Base):
+    __tablename__ = 'board_workout_records'
+
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime, default=datetime.utcnow)
+    sets_value = Column(Integer)
+    reps_value = Column(Integer)
+    measurement_value = Column(DECIMAL(precision=12, scale=6))
+    measurement_unit = Column(String)
+    board_workout_id = Column(Integer, ForeignKey('board_workouts.id', ondelete='CASCADE'))
+
+
+BoardWorkoutRecord.manager = BaseManager(BoardWorkoutRecord)

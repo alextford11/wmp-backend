@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.auth import get_token_data, get_user_with_token_data
 from src.crud import get_object_or_404
 from src.database import get_db
-from src.models import Board, BoardWorkout, Muscle, Workout
+from src.models import Board, BoardWorkout, BoardWorkoutRecord, Muscle, Workout
 from src.schemas.board import BoardGetSchema, CreateBoardSchema, UpdateBoardNameSchema
 from src.schemas.forms import SelectGroupInputListSchema, SelectInputListSchema
 from src.schemas.utils import MeasurementUnits
@@ -86,10 +86,21 @@ async def update_board_workout(
 ):
     get_object_or_404(db, Board, id=board_id)
     board_workout: BoardWorkout = get_object_or_404(db, BoardWorkout, id=board_workout_id)
+
+    record_fields = ['sets_value', 'reps_value', 'measurement_value', 'measurement_unit']
+    values_updated = False
     for field, value in data.dict().items():
         if value is not None:
-            setattr(board_workout, field, value)
+            if getattr(board_workout, field) != value:
+                setattr(board_workout, field, value)
+                if field in record_fields:
+                    values_updated = True
     BoardWorkout.manager(db).update(board_workout)
+    if values_updated:
+        bwr = BoardWorkoutRecord(
+            board_workout_id=board_workout.id, **{f: getattr(board_workout, f) for f in record_fields}
+        )
+        BoardWorkoutRecord.manager(db).create(bwr)
     return HTTPException(status_code=200)
 
 

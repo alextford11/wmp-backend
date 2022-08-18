@@ -1,6 +1,6 @@
 from dirty_equals import IsNow
 
-from src.models import Board, BoardWorkout, Workout
+from src.models import Board, BoardWorkout, BoardWorkoutRecord, Workout
 
 
 def test_create_board_no_user(client, db):
@@ -395,6 +395,46 @@ def test_update_board_workout_values(client, factory):
             'notes': 'Test adding some notes to the workout',
         }
     ]
+
+
+def test_update_board_workout_creates_record(client, db, factory):
+    board = factory.create_board()
+    workout = factory.create_workout(name='Push Up')
+    bw = factory.create_board_workout(board=board, workout=workout)
+    r = client.put(f'/board/{board.id}/workout/{bw.id}/', json={'notes': 'Test adding some notes to the workout'})
+    assert r.status_code == 200
+    assert not BoardWorkoutRecord.manager(db).exists(board_workout_id=bw.id)
+
+    r = client.put(f'/board/{board.id}/workout/{bw.id}/', json={'sets_value': 5})
+    assert r.status_code == 200
+
+    bwr = BoardWorkoutRecord.manager(db).get(board_workout_id=bw.id)
+    assert bwr.sets_value == 5
+    assert bwr.reps_value == 10
+    assert bwr.measurement_value == 10
+    assert bwr.measurement_unit == 'kg'
+
+    r = client.put(f'/board/{board.id}/workout/{bw.id}/', json={'reps_value': 10})
+    assert r.status_code == 200
+    assert BoardWorkoutRecord.manager(db).count(board_workout_id=bw.id) == 1
+
+    bwr = BoardWorkoutRecord.manager(db).get(board_workout_id=bw.id)
+    assert bwr.sets_value == 5
+    assert bwr.reps_value == 10
+    assert bwr.measurement_value == 10
+    assert bwr.measurement_unit == 'kg'
+
+    r = client.put(
+        f'/board/{board.id}/workout/{bw.id}/', json={'sets_value': 5, 'reps_value': 20, 'measurement_value': 12.5}
+    )
+    assert r.status_code == 200
+    assert BoardWorkoutRecord.manager(db).count(board_workout_id=bw.id) == 2
+
+    bwr = BoardWorkoutRecord.manager(db).filter(board_workout_id=bw.id).all()[-1]
+    assert bwr.sets_value == 5
+    assert bwr.reps_value == 20
+    assert bwr.measurement_value == 12.5
+    assert bwr.measurement_unit == 'kg'
 
 
 def test_update_board_workout_values_404(client, factory):
